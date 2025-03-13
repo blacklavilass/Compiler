@@ -15,7 +15,7 @@ public class JavaParserFromPascal {
 
     public static void main(String[] args) throws Exception {
         JavaParserFromPascal parser = new JavaParserFromPascal(System.in);
-        ListNode nodes = parser.start();
+        Node nodes = parser.program();
         System.out.println("Парсинг завершен!");
         System.out.println(Printer.printTree(nodes.tree(), "\n"));
     }
@@ -34,6 +34,7 @@ TOKEN : { < EMPTY: "" > |
     < VAR: "var" > |
     < THEN: "then" > | < DO: "do" > |
     < TO: "to" > | < DOWNTO: "downto" > |
+    < PROGRAM : "Program" > |
     < KEYWORD: <IF> | <ELSE> | <FOR> | <WHILE> | <VAR> | <THEN> | <DO> >|
     < NUM: (["+","-"])? (["0"-"9"])+ ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+)? > |
     < STR: "'" (~["'"])* "'" > |
@@ -43,7 +44,7 @@ TOKEN : { < EMPTY: "" > |
     < LPAR: "(" > | < RPAR: ")" > |
     < LBRACK: "[" > | < RBRACK: "]" > |
     < BEGIN: "begin" > | < END: "end" > |
-    < SEMI: ";" > | < COMMA: "," > | <COLON: ":"> |
+    < SEMI: ";" > | < COMMA: "," > | < STOP: "."> | <COLON: ":"> |
     < ASSIGN: ":=" > |
     < ADD: "+" > | < SUB: "-" > |
     < MUL: "*" > | < DIVISION: "/" > | < MOD: "mod" > | < DIV: "div" > |
@@ -69,43 +70,36 @@ List<StmtNode> nodes = new ArrayList<>();
 {return nodes;}
 }
 
-List<IfNode> ifs(): {
-List<IfNode> nodes = new ArrayList<>();
-    IfNode n;
-} {
-(n = if_() {nodes.add(n);})+ <EOF>
-{return nodes;}
-}
-
-List<ExprNode> exprs(): {
-    ExprNode n;
-    List<ExprNode> expr = new ArrayList<>();
-} {
-(n=expr() {expr.add(n);})+ <EOF>
-{return expr;}
-}
-
-List<ForNode> fors(): {
-List<ForNode> nodes = new ArrayList<>();
-    ForNode n;
-} {
-(n = for_() {nodes.add(n);})+ <EOF>
-{return nodes;}
-}
-
-List<VarNode> program(): {
+ProgramNode program(): {
+    VariableNameNode name = null;
     VarNode var;
     List<VarNode> vars = new ArrayList<>();
+    StmtListNode body;
 } {
-    var = var() {vars.add(var);} <EOF>
-    {return vars;}
+    (<PROGRAM> name = variableName())? (var = var() {vars.add(var);})* body = body() <EOF>
+    {return new ProgramNode(name, vars, body);}
+}
+
+StmtListNode body(): {
+    StmtListNode stmts;
+} {
+    <BEGIN> stmts = stmtGroup() <END> <STOP>
+    {return stmts;}
+}
+
+StmtListNode stmtGroup(): {
+   List<StmtNode> nList = new ArrayList<>();
+   StmtNode n;
+} {
+    (n=stmt() {nList.add(n);})+
+   {return new StmtListNode(nList);}
 }
 
 VarNode var() : {
 VarLineNode n;
 List<VarLineNode> lines = new ArrayList<>();
 } {
-(n = varLine() {lines.add(n);})+
+<VAR> (n = varLine() {lines.add(n);})+
 {return new VarNode(lines);}
 }
 
@@ -142,7 +136,7 @@ IfNode if_(): {
     StmtListNode n2;
     StmtListNode n3 = null;
 } {
-    <IF> n1=expr() <THEN> n2=stmtGroup() (<ELSE> n3=stmtGroup())?
+    <IF> n1=expr() <THEN> n2=conditionStatementGroup() (<ELSE> n3=conditionStatementGroup())?
     {
 if (n3 == null){
     return new IfNode(n1, n2);}
@@ -154,7 +148,7 @@ WhileNode while_(): {
     ExprNode n1;
     StmtListNode n2;
 } {
-    <WHILE> n1=expr() <DO> n2=stmtGroup()
+    <WHILE> n1=expr() <DO> n2=conditionStatementGroup()
     {return new WhileNode(n1, n2);}
 }
 
@@ -163,7 +157,7 @@ ForNode for_(): {
     Token t;
     StmtListNode n2;
 } {
-    <FOR> n1 = assign() <TO> t=<NUM> <DO> n2=stmtGroup()
+    <FOR> n1 = assign() <TO> t=<NUM> <DO> n2=conditionStatementGroup()
     {return new ForNode(n1, Integer.parseInt(t.toString()), n2);}
 }
 
@@ -182,7 +176,7 @@ StmtNode stmt(): {
     {return new StmtNode(n);}
 }
 
-StmtListNode stmtGroup(): {
+StmtListNode conditionStatementGroup(): {
    List<StmtNode> nList = new ArrayList<>();
    StmtNode n;
 } {
@@ -287,6 +281,32 @@ LiteralNode str(): {
 } {
     t=<STR>
     {return new LiteralNode(t.toString());}
+}
+
+//DEBUG=============================================================================================
+
+List<IfNode> ifs(): {
+List<IfNode> nodes = new ArrayList<>();
+    IfNode n;
+} {
+(n = if_() {nodes.add(n);})+ <EOF>
+{return nodes;}
+}
+
+List<ExprNode> exprs(): {
+    ExprNode n;
+    List<ExprNode> expr = new ArrayList<>();
+} {
+(n=expr() {expr.add(n);})+ <EOF>
+{return expr;}
+}
+
+List<ForNode> fors(): {
+List<ForNode> nodes = new ArrayList<>();
+    ForNode n;
+} {
+(n = for_() {nodes.add(n);})+ <EOF>
+{return nodes;}
 }
 
 /*
