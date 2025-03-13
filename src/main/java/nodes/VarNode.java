@@ -2,7 +2,7 @@ package nodes;
 
 import java.util.List;
 
-public class VarNode extends Node {
+public class VarNode extends BasicNode {
     List<VarLineNode> varLines;
 
     public VarNode(List<VarLineNode> varLines) {

@@ -3,10 +3,11 @@ package nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TypeNode extends BasicNode {
-    String name;
-    public TypeNode(String typeName) {
-        this.name = typeName;
+public class LiteralNode extends BasicNode implements ExprNode {
+    private String value;
+
+    public LiteralNode(String value) {
+        this.value = value;
     }
 
     @Override
@@ -16,6 +17,6 @@ public class TypeNode extends BasicNode {
 
     @Override
     public String toString() {
-        return name;
+        return value;
     }
 }

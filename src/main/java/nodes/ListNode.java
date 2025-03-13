@@ -2,7 +2,7 @@ package nodes;
 
 import java.util.List;
 
-public class ListNode extends Node {
+public class ListNode extends BasicNode {
     List<? extends Node> list;
     String name;
 

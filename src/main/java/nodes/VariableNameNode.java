@@ -3,7 +3,7 @@ package nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VariableNameNode extends Node {
+public class VariableNameNode extends BasicNode implements ExprNode {
     String name;
 
     public VariableNameNode(String varName) {
