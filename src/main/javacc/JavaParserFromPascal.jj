@@ -141,6 +141,13 @@ CallNode call(): {
    {return new CallNode(n1, nList);}
 }
 
+ExprNode group(): {
+   ExprNode n;
+} {
+   (n=literal() | n=call() | n=ident() | <LPAR> n=expr() <RPAR>)
+   {return n;}
+}
+
 ExprNode compare1(): {
     ExprNode n1;
     ExprNode n2;
@@ -175,6 +182,15 @@ ExprNode logicalOr(): {
 } {
     n1=logicalEnd() (t=<OR> n2=logicalEnd() {n1 = new BinOpNode(t.toString(), n1, n2);})*
     {return n1;}
+}
+
+AssignNode assign(): {
+    IdentNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=ident() <ASSIGN> n2=expr()
+    {return new AssignNode(n1, n2);}
 }
 
 //basics=============================================================================================
