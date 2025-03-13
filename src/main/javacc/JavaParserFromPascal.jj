@@ -33,6 +33,7 @@ TOKEN : { < EMPTY: "" > |
     < VAR: "var" > |
     < RESULT: "Result" > | /*TODO подумоть над ризалт*/
     < THEN: "then" > | < DO: "do" > |
+    < TO: "to" > | < DOWNTO: "downto" > |
     < KEYWORD: <IF> | <ELSE> | <FOR> | <WHILE> | <RESULT> | <VAR> | <THEN> | <DO> >|
     < NUM: (["+","-"])? (["0"-"9"])+ ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+)? > |
     < STR: "'" (~["'"])* "'" > |
@@ -93,6 +94,8 @@ n=variableName() {names.add(n);} (<COMMA> n=variableName() {names.add(n);})* <CO
 {return new VarLineNode(names, tn);}
 }
 
+//Program operation=============================================================================================
+
 CallNode call(): {
     VariableNameNode n1;
     ExprNode n2;
@@ -100,6 +103,76 @@ CallNode call(): {
 } {
    n1=variableName() <LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>
    {return new CallNode(n1, nList);}
+}
+
+AssignNode assign(): {
+    VariableNameNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=variableName() <ASSIGN> n2=expr()
+    {return new AssignNode(n1, n2);}
+}
+
+StmtNode simpleStmt(): {
+    StmtNode n;
+} {
+    (n=assign() | n=call()) <SEMI>
+    {return n;}
+}
+
+IfNode if_(): {
+    ExprNode n1;
+    StmtNode n2;
+    StmtNode n3 = null;
+} {
+    <IF> <LPAR> n1=expr() <RPAR> <THEN> n2=stmtList() (<ELSE> n3=stmtList())?
+    {
+if (n3 == null)
+    return new IfNode(n1, n2);
+else
+    return new IfElseNode(n1, n2, n3);
+    }
+}
+
+WhileNode while_(): {
+    ExprNode n1;
+    StmtNode n2;
+} {
+    <WHILE> n1=expr() <DO> n2=stmtList()
+    {return new WhileNode(n1, n2);}
+}
+
+ForNode for_(): {
+    AssignNode n1;
+    StmtNode n2;
+} {
+    <FOR> <LPAR> n1 = assign() <TO> <NUM> <DO> n2=stmtList()
+    {return new ForNode(n1, n2);}
+}
+
+VarDeclarationNode varDeclaration(): {
+    TypeNode n1;
+    ExprNode n2;
+    List<ExprNode> nList = new ArrayList<>();
+} {
+    n1=type() n2=varInner() {nList.add(n2);} (<COMMA> n2=varInner() {nList.add(n2);})*
+    {return new VarsNode(n1, nList);}
+}
+
+StmtNode stmt(): {
+    StmtNode n;
+} {
+    (n=if_() | n=while_() | n=for_() | n=simpleStmt() | LOOKAHEAD(3) n=varDeclaration() <SEMI> | n=composite() | n=func())
+    {return n;}
+}
+
+StmtListNode stmtList(): {
+   List<StmtNode> nList = new ArrayList<>();
+   StmtNode n;
+} {
+    (n=stmt() {nList.add(n);} (<SEMI>)*)*
+   {return new StmtListNode(nList);}
 }
 
 //math=============================================================================================
@@ -200,30 +273,6 @@ LiteralNode str(): {
     t=<STR>
     {return new LiteralNode(t.toString());}
 }
-
-/*StmtListNode stmtList(): {
-   List<StmtNode> nList = new ArrayList<>();
-   StmtNode n;
-} {
-    (n=stmt() {nList.add(n);} (<SEMI>)*)*
-   {return new StmtListNode(nList);}
-}*/
-
-/*StmtNode stmt(): {
-    StmtNode n;
-} {
-    (n=if_() | n=while_() | n=for_() | n=return_() | n=simpleStmt() <SEMI> | LOOKAHEAD(3) n=vars() <SEMI> | n=composite() | n=func())
-    {return n;}
-}
-
-AssignNode assign(): {
-    IdentNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=ident() <ASSIGN> n2=expr()
-    {return new AssignNode(n1, n2);}
-}*/
 
 /*
 public StmtListNode start(): {
