@@ -2,7 +2,7 @@ package nodes;
 
 import java.util.List;
 
-public class VarLineNode extends Node {
+public class VarLineNode extends BasicNode {
     List<VariableNameNode> variables;
     private TypeNode type;
 
