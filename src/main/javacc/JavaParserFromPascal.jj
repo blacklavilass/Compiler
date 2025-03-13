@@ -55,10 +55,26 @@ TOKEN : { < EMPTY: "" > |
     < VARAIBLE_NAME: (["a"-"z","A"-"Z","_"]) (["a"-"z","A"-"Z","_","0"-"9"])* >}
 
 public ListNode start(): {
-    List<ExprNode> n;
+    List<? extends Node> n;
 } {
-    n=exprs()
-    {return new ListNode(n, "expressions");}
+    n=stmtNodes()
+    {return new ListNode(n, "ifs");}
+}
+
+List<StmtNode> stmtNodes(): {
+StmtNode n;
+List<StmtNode> nodes = new ArrayList<>();
+} {
+(n = stmt() {nodes.add(n);})+ <EOF>
+{return nodes;}
+}
+
+List<IfNode> ifs(): {
+List<IfNode> nodes = new ArrayList<>();
+    IfNode n;
+} {
+(n = if_() {nodes.add(n);})+ <EOF>
+{return nodes;}
 }
 
 List<ExprNode> exprs(): {
@@ -67,6 +83,14 @@ List<ExprNode> exprs(): {
 } {
 (n=expr() {expr.add(n);})+ <EOF>
 {return expr;}
+}
+
+List<ForNode> fors(): {
+List<ForNode> nodes = new ArrayList<>();
+    ForNode n;
+} {
+(n = for_() {nodes.add(n);})+ <EOF>
+{return nodes;}
 }
 
 List<VarNode> program(): {
@@ -108,36 +132,27 @@ CallNode call(): {
 AssignNode assign(): {
     VariableNameNode n1;
     ExprNode n2;
-    Token t;
 } {
     n1=variableName() <ASSIGN> n2=expr()
     {return new AssignNode(n1, n2);}
 }
 
-StmtNode simpleStmt(): {
-    StmtNode n;
-} {
-    (n=assign() | n=call()) <SEMI>
-    {return n;}
-}
-
 IfNode if_(): {
     ExprNode n1;
-    StmtNode n2;
-    StmtNode n3 = null;
+    StmtListNode n2;
+    StmtListNode n3 = null;
 } {
-    <IF> <LPAR> n1=expr() <RPAR> <THEN> n2=stmtGroup() (<ELSE> n3=stmtGroup())?
+    <IF> n1=expr() <THEN> n2=stmtGroup() (<ELSE> n3=stmtGroup())?
     {
-if (n3 == null)
-    return new IfNode(n1, n2);
-else
+if (n3 == null){
+    return new IfNode(n1, n2);}
     return new IfElseNode(n1, n2, n3);
     }
 }
 
 WhileNode while_(): {
     ExprNode n1;
-    StmtNode n2;
+    StmtListNode n2;
 } {
     <WHILE> n1=expr() <DO> n2=stmtGroup()
     {return new WhileNode(n1, n2);}
@@ -145,31 +160,33 @@ WhileNode while_(): {
 
 ForNode for_(): {
     AssignNode n1;
-    StmtNode n2;
+    Token t;
+    StmtListNode n2;
 } {
-    <FOR> <LPAR> n1 = assign() <TO> <NUM> <DO> n2=stmtGroup()
-    {return new ForNode(n1, n2);}
+    <FOR> n1 = assign() <TO> t=<NUM> <DO> n2=stmtGroup()
+    {return new ForNode(n1, Integer.parseInt(t.toString()), n2);}
 }
 
 VarDeclarationNode varDeclaration(): {
     AssignNode n1;
 } {
-    <VAR> n1=assign() <SEMI>
-    {return new AssignNode(n1, nList);}
+    <VAR> n1=assign()
+    {return new VarDeclarationNode(n1);}
 }
 
+
 StmtNode stmt(): {
-    StmtNode n;
+    Node n;
 } {
-    (n=if_() | n=while_() | n=for_() | n=simpleStmt() | n=varDeclaration())
-    {return n;}
+    (n=if_() | n=while_() | n=for_() | ((n=assign() | n=call() | n=varDeclaration()) <SEMI>))
+    {return new StmtNode(n);}
 }
 
 StmtListNode stmtGroup(): {
    List<StmtNode> nList = new ArrayList<>();
    StmtNode n;
 } {
-    n=stmt() {nList.add(n);} | <BEGIN> (n=stmt() {nList.add(n);})* <END> <SEMI>
+    (n=stmt() {nList.add(n);} | <BEGIN> (n=stmt() {nList.add(n);})* <END> <SEMI>)
    {return new StmtListNode(nList);}
 }
 
@@ -198,7 +215,7 @@ ExprNode compare(): {
     ExprNode n2;
     Token t;
 } {
-    n1=add() ((t=<GE> | t=<LE> | t=<GT> | t=<LT> | t=<EQUALS> | t=<NEQUALS>) n2=add() {n1 = new BinaryExprNode(BinaryOperator.fromString(t.toString()), n1, n2);})?
+    n1=add() ((t=<GE> | t=<LE> | t=<GT> | t=<LT> | t=<EQUALS> | t=<NEQUALS>) n2=add() {n1 = new BinaryExprNode(BinaryOperator.fromString(t.toString()), n1, n2);})*
     {return n1;}
 }
 
