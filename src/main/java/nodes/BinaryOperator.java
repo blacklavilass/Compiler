@@ -26,4 +26,13 @@ public enum BinaryOperator {
     public String toString() {
         return name;
     }
+
+    public static BinaryOperator fromString(String name) {
+        for (BinaryOperator op : BinaryOperator.values()) {
+            if (op.name.equals(name)) {
+                return op;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
 }

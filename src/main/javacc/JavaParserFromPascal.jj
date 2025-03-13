@@ -7,7 +7,7 @@ PARSER_BEGIN(JavaParserFromPascal)
 
 import java.util.ArrayList;
 import java.util.List;
-import printer.*;
+import nodes.BinaryOperator;import nodes.VariableNameNode;import printer.*;
 import ast.*;
 public class JavaParserFromPascal {
 
@@ -17,6 +17,10 @@ public class JavaParserFromPascal {
         System.out.println("Парсинг завершен!");
         System.out.println(Printer.printTree(nodes.tree(), "\n"));
     }
+
+}}
+
+}}
 
 }
 PARSER_END(JavaParserFromPascal)
@@ -37,7 +41,6 @@ TOKEN : { < EMPTY: "" > |
     < TRUE: "true" > | < FALSE: "false" > |
     < LITERAL: <NUM> | <STR> | <TRUE> | <FALSE> > |
     < TYPE: "integer" | "real" | "string" | "boolean" | "char" > |
-    < VARAIBLE_NAME: (["a"-"z","A"-"Z","_"]) (["a"-"z","A"-"Z","_","0"-"9"])* > |
     < LPAR: "(" > | < RPAR: ")" > |
     < LBRACK: "[" > | < RBRACK: "]" > |
     < BEGIN: "begin" > | < END: "end" > |
@@ -49,7 +52,8 @@ TOKEN : { < EMPTY: "" > |
     < NOT: "not" > |
     < GE: ">=" > | < LE: "<=" > |
     < GT: ">" > | < LT: "<" > |
-    < NEQUALS: "<>" > | < EQUALS: "=" >}
+    < NEQUALS: "<>" > | < EQUALS: "=" > |
+    < VARAIBLE_NAME: (["a"-"z","A"-"Z","_"]) (["a"-"z","A"-"Z","_","0"-"9"])* >}
 
 public ListNode start(): {
     List<VarNode> n;
@@ -83,30 +87,59 @@ n=variableName() {names.add(n);} (<COMMA> n=variableName() {names.add(n);})* <CO
 {return new VarLineNode(names, tn);}
 }
 
-LiteralNode literal(): {
-    Token t;
+CallNode call(): {
+    VariableNameNode n1;
+    ExprNode n2;
+    List<ExprNode> nList = new ArrayList<>();
 } {
-    (t=<NUM> | t=<TRUE> | t=<FALSE> | t=<STR>)
-    {return new LiteralNode(t.toString());}
+   n1=variableName() <LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>
+   {return new CallNode(n1, nList);}
 }
 
 //math=============================================================================================
-
-ExprNode add(): {
-    ExprNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=mult() ((t=<ADD> | t=<SUB>) n2=mult() {n1 = new BinOpNode(t.toString(), n1, n2);})*
-    {return n1;}
-}
 
 ExprNode mult(): {
     ExprNode n1;
     ExprNode n2;
     Token t;
 } {
-    n1=group() ((t=<MUL> | t=<DIV> | t=<MOD>) n2=group() {n1 = new BinOpNode(t.toString(), n1, n2);})*
+    n1=group() ((t=<MUL> | t=<DIV> | t=<MOD> | t=<DIVISION>) n2=group() {n1 = new BinOpNode(BinaryOperator.fromString(t.toString()), n1, n2);})*
+    {return n1;}
+}
+
+ExprNode add(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=mult() ((t=<ADD> | t=<SUB>) n2=mult() {n1 = new BinOpNode(BinaryOperator.fromString(t.toString()), n1, n2);})*
+    {return n1;}
+}
+
+ExprNode compare(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=add() ((t=<GE> | t=<LE> | t=<GT> | t=<LT> | <EQUALS> | <NEQUALS>) n2=add() {n1 = new BinOpNode(BinaryOperator.fromString(t.toString()), n1, n2);})?
+    {return n1;}
+}
+
+ExprNode logicalAnd(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=compare() (t=<AND> n2=compare() {n1 = new BinOpNode(BinaryOperator.fromString(t.toString()), n1, n2);})*
+    {return n1;}
+}
+
+ExprNode logicalOr(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=logicalAnd() (t=<OR> n2=logicalAnd() {n1 = new BinOpNode(BinaryOperator.fromString(t.toString), n1, n2);})*
     {return n1;}
 }
 
@@ -117,83 +150,21 @@ ExprNode expr(): {
    {return n;}
 }
 
-StmtNode stmt(): {
-    StmtNode n;
-} {
-    (n=if_() | n=while_() | n=for_() | n=return_() | n=simpleStmt() <SEMI> | LOOKAHEAD(3) n=vars() <SEMI> | n=composite() | n=func())
-    {return n;}
-}
-
-StmtListNode stmtList(): {
-   List<StmtNode> nList = new ArrayList<>();
-   StmtNode n;
-} {
-    (n=stmt() {nList.add(n);} (<SEMI>)*)*
-   {return new StmtListNode(nList);}
-}
-
-CallNode call(): {
-    IdentNode n1;
-    ExprNode n2;
-    List<ExprNode> nList = new ArrayList<>();
-} {
-   n1=ident() <LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>
-   {return new CallNode(n1, nList);}
-}
-
 ExprNode group(): {
    ExprNode n;
 } {
-   (n=literal() | n=call() | n=ident() | <LPAR> n=expr() <RPAR>)
+   (n=literal() | n=call() | n=variableName() | <LPAR> n=expr() <RPAR>)
    {return n;}
 }
 
-ExprNode compare1(): {
-    ExprNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=add() ((t=<GE> | t=<LE> | t=<GT> | t=<LT>) n2=add() {n1 = new BinOpNode(t.toString(), n1, n2);})?
-    {return n1;}
-}
-
-ExprNode compare2(): {
-    ExprNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=compare1() ((t=<EQUALS> | t=<NEQUALS>) n2=compare1() {n1 = new BinOpNode(t.toString(), n1, n2);})?
-    {return n1;}
-}
-
-ExprNode logicalEnd(): {
-    ExprNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=compare2() (t=<AND> n2=compare2() {n1 = new BinOpNode(t.toString(), n1, n2);})*
-    {return n1;}
-}
-
-ExprNode logicalOr(): {
-    ExprNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=logicalEnd() (t=<OR> n2=logicalEnd() {n1 = new BinOpNode(t.toString(), n1, n2);})*
-    {return n1;}
-}
-
-AssignNode assign(): {
-    IdentNode n1;
-    ExprNode n2;
-    Token t;
-} {
-    n1=ident() <ASSIGN> n2=expr()
-    {return new AssignNode(n1, n2);}
-}
-
 //basics=============================================================================================
+
+LiteralNode literal(): {
+    Token t;
+} {
+    (t=<NUM> | t=<TRUE> | t=<FALSE> | t=<STR>)
+    {return new LiteralNode(t.toString());}
+}
 
 VariableNameNode variableName() : {
 Token t;
@@ -224,6 +195,29 @@ LiteralNode str(): {
     {return new LiteralNode(t.toString());}
 }
 
+/*StmtListNode stmtList(): {
+   List<StmtNode> nList = new ArrayList<>();
+   StmtNode n;
+} {
+    (n=stmt() {nList.add(n);} (<SEMI>)*)*
+   {return new StmtListNode(nList);}
+}*/
+
+/*StmtNode stmt(): {
+    StmtNode n;
+} {
+    (n=if_() | n=while_() | n=for_() | n=return_() | n=simpleStmt() <SEMI> | LOOKAHEAD(3) n=vars() <SEMI> | n=composite() | n=func())
+    {return n;}
+}
+
+AssignNode assign(): {
+    IdentNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=ident() <ASSIGN> n2=expr()
+    {return new AssignNode(n1, n2);}
+}*/
 
 /*
 public StmtListNode start(): {
