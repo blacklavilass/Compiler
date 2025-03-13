@@ -8,7 +8,7 @@ PARSER_BEGIN(JavaParserFromPascal)
 import java.util.ArrayList;
 import java.util.List;
 import printer.*;
-import nodes.*;
+import ast.*;
 public class JavaParserFromPascal {
 
     public static void main(String[] args) throws Exception {
@@ -55,14 +55,14 @@ public ListNode start(): {
     List<VarNode> n;
 } {
     n=program()
-    {return new ListNode(n, "VarBodies");}
+    {return new ListNode(n);}
 }
 
 List<VarNode> program(): {
     VarNode var;
     List<VarNode> vars = new ArrayList<>();
 } {
-    (var = var() {vars.add(var);})+ <EOF>
+    var = var() {vars.add(var);} <EOF>
     {return vars;}
 }
 
@@ -70,7 +70,7 @@ VarNode var() : {
 VarLineNode n;
 List<VarLineNode> lines = new ArrayList<>();
 } {
- <VAR> (n = varLine() {lines.add(n);})+
+(n = varLine() {lines.add(n);})+
 {return new VarNode(lines);}
 }
 
@@ -83,11 +83,108 @@ n=variableName() {names.add(n);} (<COMMA> n=variableName() {names.add(n);})* <CO
 {return new VarLineNode(names, tn);}
 }
 
+LiteralNode literal(): {
+    Token t;
+} {
+    (t=<NUM> | t=<TRUE> | t=<FALSE> | t=<STR>)
+    {return new LiteralNode(t.toString());}
+}
+
+//math=============================================================================================
+
+ExprNode add(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=mult() ((t=<ADD> | t=<SUB>) n2=mult() {n1 = new BinOpNode(t.toString(), n1, n2);})*
+    {return n1;}
+}
+
+ExprNode mult(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=group() ((t=<MUL> | t=<DIV> | t=<MOD>) n2=group() {n1 = new BinOpNode(t.toString(), n1, n2);})*
+    {return n1;}
+}
+
+ExprNode expr(): {
+   ExprNode n;
+} {
+   n=logicalOr()
+   {return n;}
+}
+
+StmtNode stmt(): {
+    StmtNode n;
+} {
+    (n=if_() | n=while_() | n=for_() | n=return_() | n=simpleStmt() <SEMI> | LOOKAHEAD(3) n=vars() <SEMI> | n=composite() | n=func())
+    {return n;}
+}
+
+StmtListNode stmtList(): {
+   List<StmtNode> nList = new ArrayList<>();
+   StmtNode n;
+} {
+    (n=stmt() {nList.add(n);} (<SEMI>)*)*
+   {return new StmtListNode(nList);}
+}
+
+CallNode call(): {
+    IdentNode n1;
+    ExprNode n2;
+    List<ExprNode> nList = new ArrayList<>();
+} {
+   n1=ident() <LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>
+   {return new CallNode(n1, nList);}
+}
+
+ExprNode compare1(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=add() ((t=<GE> | t=<LE> | t=<GT> | t=<LT>) n2=add() {n1 = new BinOpNode(t.toString(), n1, n2);})?
+    {return n1;}
+}
+
+ExprNode compare2(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=compare1() ((t=<EQUALS> | t=<NEQUALS>) n2=compare1() {n1 = new BinOpNode(t.toString(), n1, n2);})?
+    {return n1;}
+}
+
+ExprNode logicalEnd(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=compare2() (t=<AND> n2=compare2() {n1 = new BinOpNode(t.toString(), n1, n2);})*
+    {return n1;}
+}
+
+ExprNode logicalOr(): {
+    ExprNode n1;
+    ExprNode n2;
+    Token t;
+} {
+    n1=logicalEnd() (t=<OR> n2=logicalEnd() {n1 = new BinOpNode(t.toString(), n1, n2);})*
+    {return n1;}
+}
+
+//basics=============================================================================================
+
 VariableNameNode variableName() : {
 Token t;
 } {
 t = <VARAIBLE_NAME>
-{return new VariableNameNode(t.toString());}
+{
+return new VariableNameNode(t.toString());}
 }
 
 TypeNode type() : {
@@ -95,22 +192,6 @@ Token t;
 } {
 t = <TYPE>
 {return new TypeNode(t.toString());}
-}
-
-
-/*
-public StmtListNode start(): {
-    StmtListNode n;
-} {
-    n=program()
-    {return n;}
-}
-
-StmtListNode program(): {
-    StmtListNode n;
-} {
-    n=stmtList() <EOF>
-    {return n;}
 }
 
 LiteralNode num(): {
@@ -127,25 +208,20 @@ LiteralNode str(): {
     {return new LiteralNode(t.toString());}
 }
 
-LiteralNode literal(): {
-    Token t;
+
+/*
+public StmtListNode start(): {
+    StmtListNode n;
 } {
-    (t=<NUM> | t=<TRUE> | t=<FALSE> | t=<STR>)
-    {return new LiteralNode(t.toString());}
+    n=program()
+    {return n;}
 }
 
-IdentNode ident(): {
-   Token t;
+StmtListNode program(): {
+    StmtListNode n;
 } {
-   t=<IDENT>
-   {return new IdentNode(t.toString());}
-}
-
-TypeNode type(): {
-   Token t;
-} {
-   t=<TYPE>
-   {return new TypeNode(t.toString());}
+    n=stmtList() <EOF>
+    {return n;}
 }
 
 ExprNode add(): {
