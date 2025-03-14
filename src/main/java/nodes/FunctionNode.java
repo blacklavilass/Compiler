@@ -3,22 +3,24 @@ package nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProcedureNode extends BasicNode {
+public class FunctionNode extends BasicNode {
     private VariableNameNode name;
     private ParamListNode params;
+    private TypeNode returnType;
     private List<VarNode> vars;
     private StmtListNode body;
 
-    public ProcedureNode(VariableNameNode name, ParamListNode params, List<VarNode> vars, StmtListNode body) {
+    public FunctionNode(VariableNameNode name, ParamListNode params, TypeNode returnType, List<VarNode> vars, StmtListNode body) {
         this.name = name;
         this.params = params;
+        this.returnType = returnType;
         this.vars = vars;
         this.body = body;
     }
 
     @Override
     public String toString() {
-        return "procedure " + name.toString();
+        return "function " + name.toString() + " of " + returnType.toString();
     }
 
     @Override
@@ -31,3 +33,4 @@ public class ProcedureNode extends BasicNode {
         return children;
     }
 }
+

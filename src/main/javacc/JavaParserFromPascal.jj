@@ -33,7 +33,7 @@ TOKEN : { < EMPTY: "" > |
     < VAR: "var" > |
     < THEN: "then" > | < DO: "do" > |
     < TO: "to" > | < DOWNTO: "downto" > |
-    < PROGRAM : "Program" > | < PROCEDURE: "procedure"> |
+    < PROGRAM : "Program" > | < PROCEDURE: "procedure" > | < FUNCTION: "function" > |
     < KEYWORD: <IF> | <ELSE> | <FOR> | <WHILE> | <VAR> | <THEN> | <DO> >|
     < NUM: (["+","-"])? (["0"-"9"])+ ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+)? > |
     < STR: "'" (~["'"])* "'" > |
@@ -61,33 +61,37 @@ public ListNode start(): {
     {return new ListNode(n, "ifs");}
 }
 
-List<StmtNode> stmtNodes(): {
-StmtNode n;
-List<StmtNode> nodes = new ArrayList<>();
-} {
-(n = stmt() {nodes.add(n);})+ <EOF>
-{return nodes;}
-}
-
 ProgramNode program(): {
     VariableNameNode name = null;
     VarNode var;
     List<VarNode> vars = new ArrayList<>();
-    /*ProcedureNode proc;
-    List<ProcedureNode> procs = new ArrayList<>();*/
+    ProcedureNode proc;
+    List<ProcedureNode> procs = new ArrayList<>();
     StmtListNode body;
 } {
     (<PROGRAM> name = variableName() <SEMI>)?
-        /*((proc = procedure() {procs.add(proc);}) | */(var = var() {vars.add(var);})/*)*/*
-    body = body() <EOF>
-    {return new ProgramNode(name, /*procs,*/ vars, body);}
+        ((proc = procedure() {procs.add(proc);}) | (var = var() {vars.add(var);}))*
+    body = mainBody() <EOF>
+    {return new ProgramNode(name, procs, vars, body);}
 }
 
-StmtListNode body(): {
+StmtListNode mainBody(): {
     StmtListNode stmts;
 } {
     <BEGIN> stmts = stmtGroup() <END> <STOP>
     {return stmts;}
+}
+
+FunctionNode function(): {
+     VariableNameNode name;
+     ParamListNode params = ParamListNode.empty();
+     TypeNode type;
+     VarNode var;
+     List<VarNode> vars = new ArrayList<>();
+     StmtListNode body;
+} {
+     <FUNCTION> name = variableName() (<LPAR> params = paramsGroup() <RPAR>)? <COLON> type = type() <SEMI> (var = var() {vars.add(var);})* body = generalBody()
+     {return new FunctionNode(name, params, type, vars, body);}
 }
 
 ProcedureNode procedure(): {
@@ -97,46 +101,32 @@ ProcedureNode procedure(): {
     List<VarNode> vars = new ArrayList<>();
     StmtListNode body;
 } {
-    <PROCEDURE> name = variableName() (<LPAR> params = paramsGroup() <RPAR> <SEMI> | <SEMI>) (var = var() {vars.add(var);})* body = nonMainFunctionBody()
+    <PROCEDURE> name = variableName() (<LPAR> params = paramsGroup() <RPAR> <SEMI> | <SEMI>) (var = var() {vars.add(var);})* body = generalBody()
     {return new ProcedureNode(name, params, vars, body);}
 }
 
 ParamListNode paramsGroup(): {
-    List<ParamNode> nodes = new ArrayList<>();
-    ParamNode n;
+    List<VarLineNode> nodes = new ArrayList<>();
+    VarLineNode n;
 } {
-    (n = param() {nodes.add(n);})*
+    (n = varLine() {nodes.add(n);})? (<SEMI> n = varLine() {nodes.add(n);})*
     {return new ParamListNode(nodes);}
 }
 
-ParamNode param() : {
-    TypeNode type;
-    VariableNameNode name;
-} {
-    type = type() name = variableName()
-    {return new ParamNode(type, name);}
-}
-
-StmtListNode nonMainFunctionBody(): {
+StmtListNode generalBody(): {
     StmtListNode stmts;
 } {
     <BEGIN> stmts = stmtGroup() <END> <SEMI>
     {return stmts;}
 }
 
-StmtListNode stmtGroup(): {
-   List<StmtNode> nList = new ArrayList<>();
-   StmtNode n;
-} {
-    (n=stmt() {nList.add(n);})+
-   {return new StmtListNode(nList);}
-}
+//var=============================================================================================
 
 VarNode var() : {
 VarLineNode n;
 List<VarLineNode> lines = new ArrayList<>();
 } {
-<VAR> (n = varLine() {lines.add(n);})+
+<VAR> (n = varLine() {lines.add(n); } <SEMI>)+
 {return new VarNode(lines);}
 }
 
@@ -145,7 +135,7 @@ VariableNameNode n;
 List<VariableNameNode> names = new ArrayList<>();
 TypeNode tn;
 } {
-n=variableName() {names.add(n);} (<COMMA> n=variableName() {names.add(n);})* <COLON> tn = type() <SEMI>
+n=variableName() {names.add(n);} (<COMMA> n=variableName() {names.add(n);})* <COLON> tn = type()
 {return new VarLineNode(names, tn);}
 }
 
@@ -156,7 +146,7 @@ CallNode call(): {
     ExprNode n2;
     List<ExprNode> nList = new ArrayList<>();
 } {
-   n1=variableName() <LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>
+   n1=variableName() (<LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>)?
    {return new CallNode(n1, nList);}
 }
 
@@ -190,20 +180,12 @@ WhileNode while_(): {
 }
 
 ForNode for_(): {
-    ForIteratorAssignNode n1;
+    AssignNode n1;
     Token t;
     StmtListNode n2;
 } {
-    <FOR> n1 = forAssign() <TO> t=<NUM> <DO> n2=conditionStatementGroup()
+    <FOR> (n1 = varDeclaration() | n1 = assign()) <TO> t=<NUM> <DO> n2=conditionStatementGroup()
     {return new ForNode(n1, Integer.parseInt(t.toString()), n2);}
-}
-
-ForIteratorAssignNode forAssign(): {
-    AssignNode n1;
-    boolean flag;
-} {
-    ((<VAR> {flag = true;}) | {flag = false;}) n1=assign()
-    {return new ForIteratorAssignNode(n1, flag);}
 }
 
 VarDeclarationNode varDeclaration(): {
@@ -226,6 +208,14 @@ StmtListNode conditionStatementGroup(): {
    StmtNode n;
 } {
     (n=stmt() {nList.add(n);} | <BEGIN> (n=stmt() {nList.add(n);})* <END> <SEMI>)
+   {return new StmtListNode(nList);}
+}
+
+StmtListNode stmtGroup(): {
+   List<StmtNode> nList = new ArrayList<>();
+   StmtNode n;
+} {
+    (n=stmt() {nList.add(n);})+
    {return new StmtListNode(nList);}
 }
 
@@ -351,6 +341,14 @@ List<ForNode> nodes = new ArrayList<>();
     ForNode n;
 } {
 (n = for_() {nodes.add(n);})+ <EOF>
+{return nodes;}
+}
+
+List<StmtNode> stmtNodes(): {
+StmtNode n;
+List<StmtNode> nodes = new ArrayList<>();
+} {
+(n = stmt() {nodes.add(n);})+ <EOF>
 {return nodes;}
 }
 

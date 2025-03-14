@@ -1,24 +1,17 @@
 package nodes;
 
-import java.util.ArrayList;
-import java.util.List;
+public class VarDeclarationNode extends AssignNode {
 
-public class VarDeclarationNode extends BasicNode {
-    private AssignNode assign;
+    public VarDeclarationNode(VariableNameNode varName, ExprNode expr) {
+        super(varName, expr);
+    }
 
-    public VarDeclarationNode(AssignNode assign) {
-        this.assign = assign;
+    public VarDeclarationNode(AssignNode another) {
+        super(another.varName, another.expr);
     }
 
     @Override
     public String toString() {
-        return "var statement";
-    }
-
-    @Override
-    public List<? extends Node> children() {
-        List<Node> children = new ArrayList<Node>();
-        children.add(assign);
-        return children;
+        return "new var :=";
     }
 }
