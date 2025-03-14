@@ -10,6 +10,10 @@ public class StmtListNode extends BasicNode{
         this.statements = statements;
     }
 
+    public StmtListNode(StmtListNode other) {
+        this.statements = other.statements;
+    }
+
     @Override
     public String toString() {
         return "statements";

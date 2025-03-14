@@ -67,12 +67,14 @@ ProgramNode program(): {
     List<VarNode> vars = new ArrayList<>();
     ProcedureNode proc;
     List<ProcedureNode> procs = new ArrayList<>();
+    FunctionNode func;
+    List<FunctionNode> funcs = new ArrayList<>();
     StmtListNode body;
 } {
     (<PROGRAM> name = variableName() <SEMI>)?
-        ((proc = procedure() {procs.add(proc);}) | (var = var() {vars.add(var);}))*
+        ((proc = procedure() {procs.add(proc);}) | func = function() {funcs.add(func);} | (var = var() {vars.add(var);}))*
     body = mainBody() <EOF>
-    {return new ProgramNode(name, procs, vars, body);}
+    {return new ProgramNode(name, procs, funcs, vars, body);}
 }
 
 StmtListNode mainBody(): {
@@ -183,9 +185,10 @@ ForNode for_(): {
     AssignNode n1;
     Token t;
     StmtListNode n2;
+    boolean isUp;
 } {
-    <FOR> (n1 = varDeclaration() | n1 = assign()) <TO> t=<NUM> <DO> n2=conditionStatementGroup()
-    {return new ForNode(n1, Integer.parseInt(t.toString()), n2);}
+    <FOR> (n1 = varDeclaration() | n1 = assign()) ((<TO> {isUp = true;}) | (<DOWNTO> {isUp = false;})) t=<NUM> <DO> n2=conditionStatementGroup()
+    {return new ForNode(n1, isUp, Integer.parseInt(t.toString()), n2);}
 }
 
 VarDeclarationNode varDeclaration(): {
@@ -199,23 +202,24 @@ VarDeclarationNode varDeclaration(): {
 StmtNode stmt(): {
     Node n;
 } {
-    (n=if_() | n=while_() | n=for_() | ((n=assign() | n=call() | n=varDeclaration()) <SEMI>))
+    (n=if_() | n=while_() | n=for_() | n=assign() | n=call() | n=varDeclaration())
     {return new StmtNode(n);}
 }
 
 StmtListNode conditionStatementGroup(): {
    List<StmtNode> nList = new ArrayList<>();
    StmtNode n;
+   StmtListNode stmtList = null;
 } {
-    (n=stmt() {nList.add(n);} | <BEGIN> (n=stmt() {nList.add(n);})* <END> <SEMI>)
-   {return new StmtListNode(nList);}
+    (n=stmt() {nList.add(n); stmtList = new StmtListNode(nList);} | <BEGIN> stmtList=stmtGroup() <END>)
+   {return stmtList;}
 }
 
 StmtListNode stmtGroup(): {
    List<StmtNode> nList = new ArrayList<>();
    StmtNode n;
 } {
-    (n=stmt() {nList.add(n);})+
+    n=stmt() {nList.add(n);} (<SEMI> n=stmt() {nList.add(n);})* (<SEMI>)?
    {return new StmtListNode(nList);}
 }
 
@@ -344,7 +348,7 @@ List<ForNode> nodes = new ArrayList<>();
 {return nodes;}
 }
 
-List<StmtNode> stmtNodes(): {
+List<StmtNode> stmtNodes(): { //Не работает, переписать
 StmtNode n;
 List<StmtNode> nodes = new ArrayList<>();
 } {

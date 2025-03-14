@@ -6,12 +6,14 @@ import java.util.List;
 public class ProgramNode extends BasicNode {
     VariableNameNode name;
     List<ProcedureNode> procs;
+    List<FunctionNode> funcs;
     List<VarNode> vars;
     StmtListNode stmts;
 
-    public ProgramNode(VariableNameNode name, List<ProcedureNode> procs, List<VarNode> vars, StmtListNode stmts) {
+    public ProgramNode(VariableNameNode name, List<ProcedureNode> procs, List<FunctionNode> funcs, List<VarNode> vars, StmtListNode stmts) {
         this.name = name;
         this.procs = procs;
+        this.funcs = funcs;
         this.vars = vars;
         this.stmts = stmts;
     }
@@ -19,6 +21,7 @@ public class ProgramNode extends BasicNode {
     public List<? extends Node> children() {
         List<Node> children = new ArrayList<>();
         children.add(new ListNode(procs, "procedures"));
+        children.add(new ListNode(funcs, "functions"));
         children.add(new ListNode(vars, "vars"));
         children.add(stmts);
         return children;
