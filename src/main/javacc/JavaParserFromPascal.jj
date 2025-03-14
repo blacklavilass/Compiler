@@ -1,4 +1,3 @@
-
 options {
     LOOKAHEAD = 2;
     STATIC = false;
@@ -34,7 +33,7 @@ TOKEN : { < EMPTY: "" > |
     < VAR: "var" > |
     < THEN: "then" > | < DO: "do" > |
     < TO: "to" > | < DOWNTO: "downto" > |
-    < PROGRAM : "Program" > |
+    < PROGRAM : "Program" > | < PROCEDURE: "procedure"> |
     < KEYWORD: <IF> | <ELSE> | <FOR> | <WHILE> | <VAR> | <THEN> | <DO> >|
     < NUM: (["+","-"])? (["0"-"9"])+ ("." (["0"-"9"])+)? (["e","E"] (["+","-"])? (["0"-"9"])+)? > |
     < STR: "'" (~["'"])* "'" > |
@@ -74,16 +73,54 @@ ProgramNode program(): {
     VariableNameNode name = null;
     VarNode var;
     List<VarNode> vars = new ArrayList<>();
+    /*ProcedureNode proc;
+    List<ProcedureNode> procs = new ArrayList<>();*/
     StmtListNode body;
 } {
-    (<PROGRAM> name = variableName())? (var = var() {vars.add(var);})* body = body() <EOF>
-    {return new ProgramNode(name, vars, body);}
+    (<PROGRAM> name = variableName() <SEMI>)?
+        /*((proc = procedure() {procs.add(proc);}) | */(var = var() {vars.add(var);})/*)*/*
+    body = body() <EOF>
+    {return new ProgramNode(name, /*procs,*/ vars, body);}
 }
 
 StmtListNode body(): {
     StmtListNode stmts;
 } {
     <BEGIN> stmts = stmtGroup() <END> <STOP>
+    {return stmts;}
+}
+
+ProcedureNode procedure(): {
+    VariableNameNode name;
+    ParamListNode params = ParamListNode.empty();
+    VarNode var;
+    List<VarNode> vars = new ArrayList<>();
+    StmtListNode body;
+} {
+    <PROCEDURE> name = variableName() (<LPAR> params = paramsGroup() <RPAR> <SEMI> | <SEMI>) (var = var() {vars.add(var);})* body = nonMainFunctionBody()
+    {return new ProcedureNode(name, params, vars, body);}
+}
+
+ParamListNode paramsGroup(): {
+    List<ParamNode> nodes = new ArrayList<>();
+    ParamNode n;
+} {
+    (n = param() {nodes.add(n);})*
+    {return new ParamListNode(nodes);}
+}
+
+ParamNode param() : {
+    TypeNode type;
+    VariableNameNode name;
+} {
+    type = type() name = variableName()
+    {return new ParamNode(type, name);}
+}
+
+StmtListNode nonMainFunctionBody(): {
+    StmtListNode stmts;
+} {
+    <BEGIN> stmts = stmtGroup() <END> <SEMI>
     {return stmts;}
 }
 
@@ -153,12 +190,20 @@ WhileNode while_(): {
 }
 
 ForNode for_(): {
-    AssignNode n1;
+    ForIteratorAssignNode n1;
     Token t;
     StmtListNode n2;
 } {
-    <FOR> n1 = assign() <TO> t=<NUM> <DO> n2=conditionStatementGroup()
+    <FOR> n1 = forAssign() <TO> t=<NUM> <DO> n2=conditionStatementGroup()
     {return new ForNode(n1, Integer.parseInt(t.toString()), n2);}
+}
+
+ForIteratorAssignNode forAssign(): {
+    AssignNode n1;
+    boolean flag;
+} {
+    ((<VAR> {flag = true;}) | {flag = false;}) n1=assign()
+    {return new ForIteratorAssignNode(n1, flag);}
 }
 
 VarDeclarationNode varDeclaration(): {

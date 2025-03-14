@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForNode extends BasicNode{
-    private AssignNode assign;
+    private ForIteratorAssignNode assign;
     private int ceil;
     private StmtListNode body;
 
-    public ForNode(AssignNode assign, Integer ceil, StmtListNode body) {
+    public ForNode(ForIteratorAssignNode assign, Integer ceil, StmtListNode body) {
         this.assign = assign;
         this.ceil = ceil;
         this.body = body;
