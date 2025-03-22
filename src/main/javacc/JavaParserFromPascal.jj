@@ -219,7 +219,7 @@ StmtListNode stmtGroup(): {
    List<StmtNode> nList = new ArrayList<>();
    StmtNode n;
 } {
-    n=stmt() {nList.add(n);} (<SEMI> n=stmt() {nList.add(n);})* (<SEMI>)?
+    (n=stmt() {nList.add(n);} (<SEMI> n=stmt() {nList.add(n);})* (<SEMI>)?)?
    {return new StmtListNode(nList);}
 }
 
