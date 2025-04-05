@@ -1,5 +1,7 @@
 package nodes;
 
+import semantic.Scope;
+
 import java.util.List;
 
 public class ListNode extends BasicNode {
@@ -14,6 +16,11 @@ public class ListNode extends BasicNode {
     @Override
     public List<? extends Node> children() {
         return list;
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = scope;
     }
 
     @Override

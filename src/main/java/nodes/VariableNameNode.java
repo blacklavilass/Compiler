@@ -16,6 +16,10 @@ public class VariableNameNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public void semanticCheck() {
+    }
+
+    @Override
     public String toString() {
         return name;
     }

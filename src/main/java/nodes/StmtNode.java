@@ -1,5 +1,7 @@
 package nodes;
 
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,5 +22,10 @@ public class StmtNode extends BasicNode{
     @Override
     public String toString() {
         return "statement";
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        node.initialize(scope);
     }
 }

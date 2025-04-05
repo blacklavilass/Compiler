@@ -1,19 +1,23 @@
 package nodes;
 
+import semantic.Callable;
+import semantic.OverlappingScope;
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionNode extends BasicNode {
-    private VariableNameNode name;
+    private String name;
     private ParamListNode params;
-    private TypeNode returnType;
+    private Type returnType;
     private List<VarNode> vars;
     private StmtListNode body;
 
     public FunctionNode(VariableNameNode name, ParamListNode params, TypeNode returnType, List<VarNode> vars, StmtListNode body) {
-        this.name = name;
+        this.name = name.name;
         this.params = params;
-        this.returnType = returnType;
+        this.returnType = returnType.name;
         this.vars = vars;
         this.body = body;
     }
@@ -31,6 +35,24 @@ public class FunctionNode extends BasicNode {
             children.add(new ListNode(vars, name.toString() + " vars"));
         children.add(body);
         return children;
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = new OverlappingScope(scope);
+        params.initialize(scope);
+        for (VarNode var : vars) {
+            var.initialize(scope);
+        }
+        body.initialize(scope);
+
+        List<Type> parameters = new ArrayList<>();
+        for (VarLineNode node: params.children()) {
+            for (int i = 0; i < node.variables.size(); i++) {
+                parameters.add(node.type);
+            }
+        }
+        scope.addCallable(new Callable(name, parameters));
     }
 }
 

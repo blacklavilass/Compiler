@@ -1,5 +1,8 @@
 package nodes;
 
+import exception.SemanticException;
+import semantic.TypeConvertibility;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,6 +29,14 @@ public enum BinaryOperator {
     BinaryOperator(String name) {
         this.name = name;
         supportable = new TreeMap<>();
+    }
+
+    public Type getReturnType(Type first, Type second) {
+        TypePair pair = new TypePair(first, second);
+        if (supportable.containsKey(pair)) {
+            return supportable.get(pair);
+        }
+        throw new SemanticException("Operation " + name + " is not supported with " + first + " and " + second);
     }
 
     @Override

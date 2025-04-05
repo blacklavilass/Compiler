@@ -1,5 +1,7 @@
 package nodes;
 
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,5 +26,13 @@ public class StmtListNode extends BasicNode{
         List<Node> children = new ArrayList<Node>(1);
         children.addAll(statements);
         return statements;
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = scope;
+        for (StmtNode stmt : statements) {
+            stmt.initialize(scope);
+        }
     }
 }

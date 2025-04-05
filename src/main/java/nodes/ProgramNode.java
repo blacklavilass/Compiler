@@ -1,5 +1,8 @@
 package nodes;
 
+import semantic.GlobalScope;
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,27 @@ public class ProgramNode extends BasicNode {
     }
 
     @Override
+    public void semanticCheck() {
+
+    }
+
+    @Override
     public String toString() {
         return name == null ? "Program" : name.toString();
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = scope;
+        for (ProcedureNode proc : procs) {
+            proc.initialize(scope);
+        }
+        for (FunctionNode func : funcs) {
+            func.initialize(scope);
+        }
+        for (VarNode var : vars) {
+            var.initialize(scope);
+        }
+        stmts.initialize(scope);
     }
 }

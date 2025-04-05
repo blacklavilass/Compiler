@@ -1,5 +1,8 @@
 package nodes;
 
+import semantic.NonOverlappingScope;
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,5 +31,13 @@ public class ForNode extends BasicNode{
         children.add(assign);
         children.add(body);
         return children;
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = new NonOverlappingScope(scope);
+        assign.initialize(scope);
+        ceil.initialize(scope);
+        body.initialize(scope);
     }
 }

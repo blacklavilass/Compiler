@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TypeNode extends BasicNode {
-    String name;
+    Type name;
     public TypeNode(String typeName) {
-        this.name = typeName;
+        this.name = Type.fromString(typeName);
     }
 
     @Override
@@ -16,6 +16,6 @@ public class TypeNode extends BasicNode {
 
     @Override
     public String toString() {
-        return name;
+        return name.toString();
     }
 }

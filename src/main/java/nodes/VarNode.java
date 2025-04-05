@@ -1,5 +1,7 @@
 package nodes;
 
+import semantic.Scope;
+
 import java.util.List;
 
 public class VarNode extends BasicNode {
@@ -15,7 +17,22 @@ public class VarNode extends BasicNode {
     }
 
     @Override
+    public void semanticCheck() {
+        for (VarLineNode varLine : varLines) {
+            varLine.semanticCheck();
+        }
+    }
+
+    @Override
     public String toString() {
         return "varLines";
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = scope;
+        for (VarLineNode varLine : varLines) {
+            varLine.initialize(scope);
+        }
     }
 }
