@@ -183,12 +183,12 @@ WhileNode while_(): {
 
 ForNode for_(): {
     AssignNode n1;
-    Token t;
+    ExprNode t;
     StmtListNode n2;
     boolean isUp;
 } {
-    <FOR> (n1 = varDeclaration() | n1 = assign()) ((<TO> {isUp = true;}) | (<DOWNTO> {isUp = false;})) t=<NUM> <DO> n2=conditionStatementGroup()
-    {return new ForNode(n1, isUp, Integer.parseInt(t.toString()), n2);}
+    <FOR> (n1 = varDeclaration() | n1 = assign()) ((<TO> {isUp = true;}) | (<DOWNTO> {isUp = false;})) t=expr() <DO> n2=conditionStatementGroup()
+    {return new ForNode(n1, isUp, t, n2);}
 }
 
 VarDeclarationNode varDeclaration(): {

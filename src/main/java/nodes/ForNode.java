@@ -5,11 +5,11 @@ import java.util.List;
 
 public class ForNode extends BasicNode{
     private AssignNode assign;
-    private int ceil;
+    private ExprNode ceil;
     private StmtListNode body;
     private boolean isUp;
 
-    public ForNode(AssignNode assign, boolean isUp, Integer ceil, StmtListNode body) {
+    public ForNode(AssignNode assign, boolean isUp, ExprNode ceil, StmtListNode body) {
         this.assign = assign;
         this.isUp = isUp;
         this.ceil = ceil;
@@ -18,12 +18,13 @@ public class ForNode extends BasicNode{
 
     @Override
     public String toString() {
-        return isUp ? String.format("for to %d", ceil) : String.format("for downto %d", ceil);
+        return isUp ? "for to" : "for downto";
     }
 
     @Override
     public List<? extends Node> children() {
         List<Node> children = new ArrayList<Node>();
+        children.add(ceil);
         children.add(assign);
         children.add(body);
         return children;
