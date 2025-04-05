@@ -47,6 +47,7 @@ public class ProcedureNode extends BasicNode {
         for (VarLineNode varLineNode: params.children()) {
             for (int i = 0; i < varLineNode.variables.size(); i++) {
                 parameters.add(varLineNode.type);
+                scope.addVariable(varLineNode.variables.get(i), varLineNode.type);
             }
         }
         scope.addCallable(new Callable(name, parameters));

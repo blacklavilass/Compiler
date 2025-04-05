@@ -21,11 +21,23 @@ public class Callable implements Comparable<Callable> {
     }
 
     private String name;
+    private Type type;
     private List<Type> parameters;
 
     public Callable(String name, List<Type> parameters) {
         this.name = name;
         this.parameters = parameters;
+        this.type = Type.UNDEFINED;
+    }
+
+    public Callable(String name, List<Type> parameters, Type returnType) {
+        this.name = name;
+        this.parameters = parameters;
+        this.type = returnType;
+    }
+
+    public Type getReturnType() {
+        return type;
     }
 
     @Override

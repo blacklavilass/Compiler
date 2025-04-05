@@ -46,13 +46,14 @@ public class FunctionNode extends BasicNode {
         }
         body.initialize(scope);
 
-        List<Type> parameters = new ArrayList<>();
+        ArrayList<Type> parameters = new ArrayList<>();
         for (VarLineNode node: params.children()) {
             for (int i = 0; i < node.variables.size(); i++) {
                 parameters.add(node.type);
+                scope.addVariable(node.variables.get(i), node.type);
             }
         }
-        scope.addCallable(new Callable(name, parameters));
+        scope.addCallable(new Callable(name, parameters, returnType));
     }
 }
 

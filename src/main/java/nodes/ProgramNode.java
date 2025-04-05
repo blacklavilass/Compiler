@@ -43,14 +43,14 @@ public class ProgramNode extends BasicNode {
     @Override
     public void initialize(Scope scope) {
         this.scope = scope;
+        for (VarNode var : vars) {
+            var.initialize(scope);
+        }
         for (ProcedureNode proc : procs) {
             proc.initialize(scope);
         }
         for (FunctionNode func : funcs) {
             func.initialize(scope);
-        }
-        for (VarNode var : vars) {
-            var.initialize(scope);
         }
         stmts.initialize(scope);
     }

@@ -26,6 +26,6 @@ public class CastNode extends BasicNode implements ExprNode{
     @Override
     public void initialize(Scope scope) {
         this.scope = scope;
-        expr.initialize(scope);
+        this.expr.initialize(scope);
     }
 }

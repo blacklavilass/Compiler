@@ -14,7 +14,7 @@ public class VarDeclarationNode extends AssignNode {
 
     @Override
     public void initialize(Scope scope) {
-        super.initialize(scope);
-        scope.addVariable(varName, expr.getType());
+        this.scope = scope;
+        scope.addVariable(varName, Type.UNDEFINED);
     }
 }

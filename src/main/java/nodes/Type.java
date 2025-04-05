@@ -5,7 +5,8 @@ public enum Type {
     REAL("real"),
     STRING("string"),
     CHAR("char"),
-    BOOLEAN("boolean");
+    BOOLEAN("boolean"),
+    UNDEFINED("undefined");
 
     private final String name;
 

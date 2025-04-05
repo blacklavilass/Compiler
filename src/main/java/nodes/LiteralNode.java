@@ -1,9 +1,11 @@
 package nodes;
 
-import java.util.ArrayList;
+import semantic.Scope;
+import semantic.VariableType;
+
 import java.util.List;
 
-public class LiteralNode implements ExprNode {
+public class LiteralNode extends BasicNode implements ExprNode {
     public final String value;
 
     public LiteralNode(String value) {
@@ -16,12 +18,16 @@ public class LiteralNode implements ExprNode {
     }
 
     @Override
-    public void semanticCheck() {
-
+    public List<String> tree() {
+        return List.of();
     }
 
     @Override
-    public List<String> tree() {
-        return List.of();
+    public void initialize(Scope scope) {
+    }
+
+    @Override
+    public Type getType() {
+        return VariableType.getType(value);
     }
 }
