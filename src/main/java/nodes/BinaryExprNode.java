@@ -40,13 +40,13 @@ public class BinaryExprNode extends BasicNode implements ExprNode {
         }
 
         for (var types : operator.supportableTypes()) {
-            if (expr1.getType().equals(types.typeLeft) || (TypeConvertibility.canConvert(expr1.getType(), types.typeLeft))
+            if ((expr1.getType().equals(types.typeLeft) || (TypeConvertibility.canConvert(expr1.getType(), types.typeLeft)))
                     && (expr2.getType().equals(types.typeRight) || TypeConvertibility.canConvert(expr2.getType(), types.typeRight))) {
                 if (!expr1.getType().equals(types.typeLeft)) {
                     expr1 = new CastNode(types.typeLeft, expr1, scope);
                 }
                 if (!expr2.getType().equals(types.typeLeft)) {
-                    expr2 = new CastNode(types.typeLeft, expr2, scope);
+                    expr2 = new CastNode(types.typeRight, expr2, scope);
                 }
 
                 type = operator.getReturnType(expr1.getType(), expr2.getType());

@@ -21,10 +21,10 @@ public enum Type {
 
     public static Type fromString(String name) {
         for (Type op : Type.values()) {
-            if (op.name.equals(name)) {
+            if (op.name.equals(name.toLowerCase())) {
                 return op;
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(name);
     }
 }

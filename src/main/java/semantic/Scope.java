@@ -9,5 +9,5 @@ public interface Scope {
     Variable getVariable(String name);
     boolean contains(Variable var);
     void addCallable(Callable callable);
-    Callable getCallable(String name, List<Type> parameters);
+    Callable getCallable(String name, List<Type> types);
 }

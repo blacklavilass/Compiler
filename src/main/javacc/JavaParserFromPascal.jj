@@ -148,7 +148,7 @@ CallNode call(): {
     ExprNode n2;
     List<ExprNode> nList = new ArrayList<>();
 } {
-   n1=variableName() (<LPAR> (LOOKAHEAD(1) n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>)?
+   n1=variableName() <LPAR> (n2=expr() {nList.add(n2);} (<COMMA> n2=expr() {nList.add(n2);})*)? <RPAR>
    {return new CallNode(n1, nList);}
 }
 

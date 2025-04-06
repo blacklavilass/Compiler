@@ -40,6 +40,7 @@ public class AssignNode extends BasicNode {
     @Override
     public void initialize(Scope scope) {
         this.scope = scope;
+        node.initialize(scope);
         expr.initialize(scope);
     }
 

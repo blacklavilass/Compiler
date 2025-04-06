@@ -14,7 +14,7 @@ public class ProcedureNode extends BasicNode {
     private StmtListNode body;
 
     public ProcedureNode(VariableNameNode name, ParamListNode params, List<VarNode> vars, StmtListNode body) {
-        this.name = name.name;
+        this.name = name.name.toLowerCase();
         this.params = params;
         this.vars = vars;
         this.body = body;
@@ -37,7 +37,7 @@ public class ProcedureNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
-        //TODO
+        body.semanticCheck();
     }
 
     @Override
@@ -55,7 +55,6 @@ public class ProcedureNode extends BasicNode {
         for (VarLineNode varLineNode: params.children()) {
             for (int i = 0; i < varLineNode.variables.size(); i++) {
                 parameters.add(varLineNode.type);
-                scope.addVariable(varLineNode.variables.get(i), varLineNode.type);
             }
         }
         scope.addCallable(new Callable(name, parameters));

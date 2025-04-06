@@ -14,6 +14,11 @@ public class LiteralNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public String toString() {
+        return value;
+    }
+
+    @Override
     public List<? extends Node> children() {
         return List.of();
     }
@@ -21,11 +26,6 @@ public class LiteralNode extends BasicNode implements ExprNode {
     @Override
     public void semanticCheck() {
         VariableType.getType(value);
-    }
-
-    @Override
-    public List<String> tree() {
-        return List.of();
     }
 
     @Override

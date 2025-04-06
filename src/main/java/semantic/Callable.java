@@ -40,6 +40,14 @@ public class Callable implements Comparable<Callable> {
         return type;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public List<Type> getParameters() {
+        return parameters;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Callable) {

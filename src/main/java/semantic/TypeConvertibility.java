@@ -15,13 +15,6 @@ public class TypeConvertibility {
             this.typeTo = typeTo;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
-            TypePair typePair = (TypePair) o;
-            return typeFrom == typePair.typeFrom && typeTo == typePair.typeTo;
-        }
-
         public boolean equals(TypePair typePair) {
             return typeFrom == typePair.typeFrom && typeTo == typePair.typeTo;
         }

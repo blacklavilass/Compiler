@@ -1,6 +1,7 @@
 package nodes;
 
 import semantic.Callable;
+import semantic.DefaultFunctions;
 import semantic.Scope;
 
 import java.util.ArrayList;
@@ -27,7 +28,13 @@ public class CallNode extends BasicNode implements ExprNode {
             arg.semanticCheck();
             types.add(arg.getType());
         }
-        scope.getCallable(functionName, types);
+        DefaultFunctions.addIfDefault(functionName, types, scope);
+        Callable function = scope.getCallable(functionName, types);
+        for (int i = 0; i < arguments.size(); i++) {
+            if (arguments.get(i).getType() != function.getParameters().get(i)) {
+                arguments.set(i, new CastNode(function.getParameters().get(i), arguments.get(i), scope));
+            }
+        }
     }
 
     @Override
@@ -40,7 +47,7 @@ public class CallNode extends BasicNode implements ExprNode {
 
     @Override
     public String toString() {
-        return functionName.toString();
+        return functionName;
     }
 
     @Override

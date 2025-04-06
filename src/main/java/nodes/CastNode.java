@@ -22,6 +22,11 @@ public class CastNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public String toString() {
+        return "cast to " + toType;
+    }
+
+    @Override
     public Type getType() {
         return toType;
     }

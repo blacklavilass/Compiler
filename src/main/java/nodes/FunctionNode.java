@@ -15,7 +15,7 @@ public class FunctionNode extends BasicNode {
     private StmtListNode body;
 
     public FunctionNode(VariableNameNode name, ParamListNode params, TypeNode returnType, List<VarNode> vars, StmtListNode body) {
-        this.name = name.name;
+        this.name = name.name.toLowerCase();
         this.params = params;
         this.returnType = returnType.name;
         this.vars = vars;
@@ -39,7 +39,6 @@ public class FunctionNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
-        //TODO: add Result expectation
         body.semanticCheck();
     }
 
@@ -59,9 +58,9 @@ public class FunctionNode extends BasicNode {
         for (VarLineNode node: params.children()) {
             for (int i = 0; i < node.variables.size(); i++) {
                 parameters.add(node.type);
-                scope.addVariable(node.variables.get(i), node.type);
             }
         }
+        scope.addVariable("result", returnType);
         scope.addCallable(new Callable(name, parameters, returnType));
     }
 }
