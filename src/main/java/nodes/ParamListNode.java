@@ -27,6 +27,11 @@ public class ParamListNode extends BasicNode{
     }
 
     @Override
+    public void semanticCheck() {
+        //не нужен
+    }
+
+    @Override
     public void initialize(Scope scope) {
         for (VarLineNode child : children) {
             child.initialize(scope);

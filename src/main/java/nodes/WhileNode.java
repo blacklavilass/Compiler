@@ -29,8 +29,12 @@ public class WhileNode extends BasicNode{
     }
 
     @Override
+    public void semanticCheck() {
+
+    }
+
+    @Override
     public void initialize(Scope scope) {
-        this.scope = new NonOverlappingScope(scope);
         condition.initialize(scope);
         body.initialize(scope);
     }

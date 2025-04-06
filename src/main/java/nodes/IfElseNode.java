@@ -1,5 +1,6 @@
 package nodes;
 
+import semantic.NonOverlappingScope;
 import semantic.Scope;
 
 import java.util.ArrayList;
@@ -27,8 +28,14 @@ public class IfElseNode extends IfNode {
     }
 
     @Override
+    public void semanticCheck() {
+        super.semanticCheck();
+        elseStmt.semanticCheck();
+    }
+
+    @Override
     public void initialize(Scope scope) {
         super.initialize(scope);
-        elseStmt.initialize(scope);
+        elseStmt.initialize(this.scope);
     }
 }

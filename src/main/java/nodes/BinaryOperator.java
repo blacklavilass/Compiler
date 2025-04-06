@@ -1,9 +1,7 @@
 package nodes;
 
 import exception.SemanticException;
-import semantic.TypeConvertibility;
-
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -39,6 +37,10 @@ public enum BinaryOperator {
         throw new SemanticException("Operation " + name + " is not supported with " + first + " and " + second);
     }
 
+    public Iterable<TypePair> supportableTypes() {
+        return supportable.keySet();
+    }
+
     @Override
     public String toString() {
         return name;
@@ -53,7 +55,7 @@ public enum BinaryOperator {
         throw new IllegalArgumentException();
     }
 
-    private static class TypePair implements Comparable<TypePair> {
+    public static class TypePair implements Comparable<TypePair> {
         Type typeLeft, typeRight;
 
         public TypePair(Type typeLeft, Type typeRight) {

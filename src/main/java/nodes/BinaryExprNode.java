@@ -11,6 +11,7 @@ public class BinaryExprNode extends BasicNode implements ExprNode {
     ExprNode expr1;
     ExprNode expr2;
     BinaryOperator operator;
+    Type type = Type.UNDEFINED;
 
     public BinaryExprNode(BinaryOperator operator, ExprNode expr1, ExprNode expr2) {
         this.expr1 = expr1;
@@ -27,6 +28,36 @@ public class BinaryExprNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public void semanticCheck() {
+        expr1.semanticCheck();
+        expr2.semanticCheck();
+
+        for (var types : operator.supportableTypes()) {
+            if (expr1.getType().equals(types.typeLeft) && expr2.getType().equals(types.typeRight)) {
+                type = operator.getReturnType(expr1.getType(), expr2.getType());
+                return;
+            }
+        }
+
+        for (var types : operator.supportableTypes()) {
+            if (expr1.getType().equals(types.typeLeft) || (TypeConvertibility.canConvert(expr1.getType(), types.typeLeft))
+                    && (expr2.getType().equals(types.typeRight) || TypeConvertibility.canConvert(expr2.getType(), types.typeRight))) {
+                if (!expr1.getType().equals(types.typeLeft)) {
+                    expr1 = new CastNode(types.typeLeft, expr1, scope);
+                }
+                if (!expr2.getType().equals(types.typeLeft)) {
+                    expr1 = new CastNode(types.typeLeft, expr1, scope);
+                }
+
+                type = operator.getReturnType(expr1.getType(), expr2.getType());
+                return;
+            }
+        }
+
+        throw new SemanticException("Operation " + operator.name() + " is not supported with " + expr1.getType() + " and " + expr2.getType());
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
         expr1.initialize(scope);
@@ -40,15 +71,6 @@ public class BinaryExprNode extends BasicNode implements ExprNode {
 
     @Override
     public Type getType() {
-        if (expr1.getType() != expr2.getType()) {
-            if (TypeConvertibility.canConvert(expr1.getType(), expr2.getType())) {
-                expr1 = new CastNode(expr2.getType(), expr1);
-            } else if (TypeConvertibility.canConvert(expr2.getType(), expr1.getType())) {
-                expr2 = new CastNode(expr1.getType(), expr2);
-            } else {
-                throw new SemanticException("Binary operator with types " + expr1.getType() + " and " + expr2.getType() + " is not supported");
-            }
-        }
-        return operator.getReturnType(expr1.getType(), expr2.getType());
+        return type;
     }
 }

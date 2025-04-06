@@ -1,5 +1,6 @@
 package nodes;
 
+import semantic.NonOverlappingScope;
 import semantic.Scope;
 
 import java.util.ArrayList;
@@ -29,10 +30,17 @@ public class StmtListNode extends BasicNode{
     }
 
     @Override
+    public void semanticCheck() {
+        for (StmtNode statement : statements) {
+            statement.semanticCheck();
+        }
+    }
+
+    @Override
     public void initialize(Scope scope) {
-        this.scope = scope;
+        this.scope = new NonOverlappingScope(scope);
         for (StmtNode stmt : statements) {
-            stmt.initialize(scope);
+            stmt.initialize(this.scope);
         }
     }
 }

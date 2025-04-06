@@ -21,12 +21,12 @@ public class VariableNameNode extends BasicNode implements ExprNode {
 
     @Override
     public void semanticCheck() {
+        variable = scope.getVariable(name);
     }
 
     @Override
     public void initialize(Scope scope) {
         this.scope = scope;
-        variable = scope.getVariable(name);
     }
 
     @Override

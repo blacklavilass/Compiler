@@ -1,6 +1,7 @@
 package nodes;
 
 import semantic.Scope;
+import semantic.Variable;
 import semantic.VariableType;
 
 import java.util.List;
@@ -15,6 +16,11 @@ public class LiteralNode extends BasicNode implements ExprNode {
     @Override
     public List<? extends Node> children() {
         return List.of();
+    }
+
+    @Override
+    public void semanticCheck() {
+        VariableType.getType(value);
     }
 
     @Override

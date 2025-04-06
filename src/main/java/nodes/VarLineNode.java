@@ -24,9 +24,7 @@ public class VarLineNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
-        for (String variable : variables) {
-            addVariable(variable, type);
-        }
+
     }
 
     @Override

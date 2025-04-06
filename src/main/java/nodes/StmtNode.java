@@ -5,7 +5,7 @@ import semantic.Scope;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StmtNode extends BasicNode{
+public class StmtNode extends BasicNode {
     private Node node;
 
     public StmtNode(Node node) {
@@ -17,6 +17,11 @@ public class StmtNode extends BasicNode{
         List<Node> children = new ArrayList<>(1);
         children.add(node);
         return children;
+    }
+
+    @Override
+    public void semanticCheck() {
+        node.semanticCheck();
     }
 
     @Override

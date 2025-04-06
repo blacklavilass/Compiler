@@ -32,7 +32,13 @@ public class ProgramNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
-
+        for (ProcedureNode proc : procs) {
+            proc.semanticCheck();
+        }
+        for (FunctionNode func : funcs) {
+            func.semanticCheck();
+        }
+        stmts.semanticCheck();
     }
 
     @Override

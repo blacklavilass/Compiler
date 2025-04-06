@@ -38,8 +38,15 @@ public class FunctionNode extends BasicNode {
     }
 
     @Override
+    public void semanticCheck() {
+        body.semanticCheck();
+    }
+
+    @Override
     public void initialize(Scope scope) {
-        this.scope = new OverlappingScope(scope);
+        scope = new OverlappingScope(scope);
+        this.scope = scope;
+
         params.initialize(scope);
         for (VarNode var : vars) {
             var.initialize(scope);

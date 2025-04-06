@@ -1,6 +1,8 @@
 package nodes;
 
+import exception.SemanticException;
 import semantic.Scope;
+import semantic.TypeConvertibility;
 
 public class VarDeclarationNode extends AssignNode {
     public VarDeclarationNode(AssignNode another) {
@@ -13,8 +15,20 @@ public class VarDeclarationNode extends AssignNode {
     }
 
     @Override
+    public void semanticCheck() {
+        expr.semanticCheck();
+        if (expr.getType().equals(node.getType())) return;
+
+        if (TypeConvertibility.canConvert(expr.getType(), node.getType())) {
+            expr = new CastNode(node.getType(), expr, scope);
+        } else {
+            throw new SemanticException("Type mismatch: " + expr.getType() + " can't be converted " + node.getType());
+        }
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
-        scope.addVariable(varName, Type.UNDEFINED);
+        scope.addVariable(node.name, Type.UNDEFINED);
     }
 }
