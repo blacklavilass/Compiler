@@ -22,7 +22,7 @@ public class ProcedureNode extends BasicNode {
 
     @Override
     public String toString() {
-        return "procedure " + name.toString();
+        return "procedure " + name;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ProcedureNode extends BasicNode {
         List<Node> children = new ArrayList<>();
         children.add(params);
         if (!vars.isEmpty())
-            children.add(new ListNode(vars, name.toString() + " vars"));
+            children.add(new ListNode(vars, name + " vars"));
         children.add(body);
         return children;
     }
@@ -42,6 +42,7 @@ public class ProcedureNode extends BasicNode {
 
     @Override
     public void initialize(Scope scope) {
+        //TODO: add support of convertable types in parameters type
         scope = new OverlappingScope(scope);
         this.scope = scope;
 

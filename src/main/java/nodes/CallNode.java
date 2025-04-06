@@ -1,5 +1,6 @@
 package nodes;
 
+import semantic.Callable;
 import semantic.Scope;
 
 import java.util.ArrayList;
@@ -20,6 +21,16 @@ public class CallNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public void semanticCheck() {
+        ArrayList<Type> types = new ArrayList<>();
+        for (ExprNode arg : arguments) {
+            arg.semanticCheck();
+            types.add(arg.getType());
+        }
+        scope.getCallable(functionName, types);
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
         for (ExprNode arg : arguments) {
@@ -34,7 +45,7 @@ public class CallNode extends BasicNode implements ExprNode {
 
     @Override
     public Type getType() {
-        ArrayList<Type> types = new ArrayList<Type>();
+        ArrayList<Type> types = new ArrayList<>();
         for (ExprNode arg : arguments) {
             types.add(arg.getType());
         }

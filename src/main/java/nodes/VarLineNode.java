@@ -24,7 +24,7 @@ public class VarLineNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
-
+        //not needed
     }
 
     @Override

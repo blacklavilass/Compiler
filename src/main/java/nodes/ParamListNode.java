@@ -28,7 +28,7 @@ public class ParamListNode extends BasicNode{
 
     @Override
     public void semanticCheck() {
-        //не нужен
+        //not needed
     }
 
     @Override

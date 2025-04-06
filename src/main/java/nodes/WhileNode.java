@@ -30,7 +30,8 @@ public class WhileNode extends BasicNode{
 
     @Override
     public void semanticCheck() {
-
+        condition.semanticCheck();
+        body.semanticCheck();
     }
 
     @Override

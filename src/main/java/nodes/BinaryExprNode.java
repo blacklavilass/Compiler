@@ -46,7 +46,7 @@ public class BinaryExprNode extends BasicNode implements ExprNode {
                     expr1 = new CastNode(types.typeLeft, expr1, scope);
                 }
                 if (!expr2.getType().equals(types.typeLeft)) {
-                    expr1 = new CastNode(types.typeLeft, expr1, scope);
+                    expr2 = new CastNode(types.typeLeft, expr2, scope);
                 }
 
                 type = operator.getReturnType(expr1.getType(), expr2.getType());

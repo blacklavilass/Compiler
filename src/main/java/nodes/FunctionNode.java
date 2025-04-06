@@ -39,11 +39,13 @@ public class FunctionNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
+        //TODO: add Result expectation
         body.semanticCheck();
     }
 
     @Override
     public void initialize(Scope scope) {
+        //TODO: add support of convertable types in parameters type
         scope = new OverlappingScope(scope);
         this.scope = scope;
 

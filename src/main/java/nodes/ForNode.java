@@ -41,7 +41,7 @@ public class ForNode extends BasicNode{
         assign.semanticCheck();
         body.semanticCheck();
 
-        if (!TypeConvertibility.canConvert(ceil.getType(), Type.INTEGER)) throw new SemanticException("Not integer after to");
+        if (!TypeConvertibility.canConvert(ceil.getType(), Type.INTEGER)) throw new SemanticException("Not an integer after " + (isUp ? "to" : "downto") + " keyword. Instead got: " + ceil.getType());
     }
 
     @Override

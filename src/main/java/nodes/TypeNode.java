@@ -18,12 +18,12 @@ public class TypeNode extends BasicNode {
 
     @Override
     public void semanticCheck() {
-        //не нужен
+        //not needed
     }
 
     @Override
     public void initialize(Scope scope) {
-        // не нужен
+        //not needed
     }
 
     @Override

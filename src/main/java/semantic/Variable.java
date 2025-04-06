@@ -32,4 +32,8 @@ public class Variable implements Comparable<Variable>{
         }
         return super.equals(obj);
     }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 }
