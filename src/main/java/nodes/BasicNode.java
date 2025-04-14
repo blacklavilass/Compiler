@@ -1,11 +1,15 @@
 package nodes;
 
+import semantic.Scope;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public abstract class BasicNode implements Node {
+    protected Scope scope = null;
+
     public List<String> tree() {
         // крайне неэффективно, но относительно просто
         List<String> res = new ArrayList<>();

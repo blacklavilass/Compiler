@@ -25,7 +25,7 @@ end;
 begin
     x := 10;
     y := 20;
-    PrintMessage;
+    PrintMessage();
     Add(x, y);
     result := x * y;
     Multiply(x, y);

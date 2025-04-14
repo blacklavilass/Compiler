@@ -1,5 +1,8 @@
 package nodes;
 
+import semantic.NonOverlappingScope;
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,5 +26,17 @@ public class WhileNode extends BasicNode{
         children.add(condition);
         children.add(body);
         return children;
+    }
+
+    @Override
+    public void semanticCheck() {
+        condition.semanticCheck();
+        body.semanticCheck();
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        condition.initialize(scope);
+        body.initialize(scope);
     }
 }

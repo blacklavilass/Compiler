@@ -1,9 +1,12 @@
 package nodes;
 
+import semantic.NonOverlappingScope;
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class IfElseNode extends  IfNode {
+public class IfElseNode extends IfNode {
     private StmtListNode elseStmt;
     public IfElseNode(ExprNode condition, StmtListNode thenStmt, StmtListNode elseStmt) {
         super(condition, thenStmt);
@@ -22,5 +25,17 @@ public class IfElseNode extends  IfNode {
         children.add(this.thenStmt);
         children.add(elseStmt);
         return children;
+    }
+
+    @Override
+    public void semanticCheck() {
+        super.semanticCheck();
+        elseStmt.semanticCheck();
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        super.initialize(scope);
+        elseStmt.initialize(this.scope);
     }
 }

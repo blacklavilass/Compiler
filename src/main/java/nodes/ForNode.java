@@ -1,5 +1,10 @@
 package nodes;
 
+import exception.SemanticException;
+import semantic.NonOverlappingScope;
+import semantic.Scope;
+import semantic.TypeConvertibility;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,5 +33,23 @@ public class ForNode extends BasicNode{
         children.add(assign);
         children.add(body);
         return children;
+    }
+
+    @Override
+    public void semanticCheck() {
+        ceil.semanticCheck();
+        assign.semanticCheck();
+        body.semanticCheck();
+
+        if (!TypeConvertibility.canConvert(ceil.getType(), Type.INTEGER)) throw new SemanticException("Not an integer after " + (isUp ? "to" : "downto") + " keyword. Instead got: " + ceil.getType());
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        scope = new NonOverlappingScope(scope);
+        this.scope = scope;
+        assign.initialize(scope);
+        ceil.initialize(scope);
+        body.initialize(scope);
     }
 }

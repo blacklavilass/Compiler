@@ -1,23 +1,42 @@
 package nodes;
 
+import semantic.Scope;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class VarLineNode extends BasicNode {
-    List<VariableNameNode> variables;
-    private TypeNode type;
+    List<String> variables;
+    Type type;
 
     public VarLineNode(List<VariableNameNode> variables, TypeNode type) {
-        this.variables = variables;
-        this.type = type;
+        this.variables = new ArrayList<>();
+        for (VariableNameNode var : variables) {
+            this.variables.add(var.name);
+        }
+        this.type = type.name;
     }
 
     @Override
     public List<? extends Node> children() {
-        return variables;
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public void semanticCheck() {
+        //not needed
     }
 
     @Override
     public String toString() {
         return type.toString();
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        this.scope = scope;
+        for (String variable : variables) {
+            scope.addVariable(variable, type);
+        }
     }
 }

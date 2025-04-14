@@ -1,9 +1,11 @@
 package nodes;
 
+import semantic.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class StmtNode extends BasicNode{
+public class StmtNode extends BasicNode {
     private Node node;
 
     public StmtNode(Node node) {
@@ -18,7 +20,17 @@ public class StmtNode extends BasicNode{
     }
 
     @Override
+    public void semanticCheck() {
+        node.semanticCheck();
+    }
+
+    @Override
     public String toString() {
         return "statement";
+    }
+
+    @Override
+    public void initialize(Scope scope) {
+        node.initialize(scope);
     }
 }
