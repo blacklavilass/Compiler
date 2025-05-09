@@ -13,6 +13,7 @@ public class GlobalScope implements Scope {
     private Set<Callable> callables;
     private int maxVariableIdentifier = 0;
     private int maxWhileIdentifier = 0;
+    private int maxForIdentifier = 0;
     private int maxOperatorIdentifier = 0;
     private int maxElseIdentifier = 0;
     private String programName = "Program";
@@ -94,6 +95,11 @@ public class GlobalScope implements Scope {
     @Override
     public int getFreeWhileIdentifier() {
         return maxWhileIdentifier++;
+    }
+
+    @Override
+    public int getFreeForIdentifier() {
+        return maxForIdentifier++;
     }
 
     @Override

@@ -4,6 +4,7 @@ import exception.SemanticException;
 import semantic.NonOverlappingScope;
 import semantic.Scope;
 import semantic.TypeConvertibility;
+import semantic.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,34 @@ public class ForNode extends BasicNode{
         body.semanticCheck();
 
         if (!TypeConvertibility.canConvert(ceil.getType(), Type.INTEGER)) throw new SemanticException("Not an integer after " + (isUp ? "to" : "downto") + " keyword. Instead got: " + ceil.getType());
+    }
+
+    @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        int ident = scope.getFreeForIdentifier();
+        StringBuilder forStart = new StringBuilder().append("for").append(ident).append("start");
+        StringBuilder forEnd = new StringBuilder().append("for").append(ident).append("end");
+        Variable v = assign.node.variable;
+        code.append(assign.generateCode());
+        code.append(forStart).append(":\n");
+        code.append(BinaryOperator.EQUAL.getOperatorCode(Type.INTEGER, Type.INTEGER, scope));
+        code.append("ifeq ").append(forEnd).append("\n");
+
+        code.append(body.generateCode());
+
+        code.append(v.generateGetCode());
+        code.append("iconst 1\n");
+        if (isUp) {
+            code.append("iadd\n");
+        } else {
+            code.append("isub\n");
+        }
+        code.append(v.generatePutCode());
+        code.append("goto ").append(forStart).append("\n");
+
+        code.append(forEnd).append(":\n");
+        return code;
     }
 
     @Override

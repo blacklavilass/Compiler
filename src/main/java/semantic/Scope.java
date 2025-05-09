@@ -10,6 +10,7 @@ public interface Scope {
 
     int getFreeVariableIdentifier();
     int getFreeWhileIdentifier();
+    int getFreeForIdentifier();
     int getFreeOperatorIdentifier();
     int getElseIdentifier();
 

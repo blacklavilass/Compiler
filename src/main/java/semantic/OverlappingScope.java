@@ -12,6 +12,7 @@ public class OverlappingScope implements Scope {
     private Set<Variable> variables;
     private int maxVariableIdentifier = 0;
     private int maxWhileIdentifier = 0;
+    private int maxForIdentifier = 0;
     private int maxOperatorIdentifier = 0;
     private int maxElseIdentifier = 0;
 
@@ -36,6 +37,11 @@ public class OverlappingScope implements Scope {
     @Override
     public int getFreeWhileIdentifier() {
         return maxWhileIdentifier++;
+    }
+
+    @Override
+    public int getFreeForIdentifier() {
+        return maxForIdentifier++;
     }
 
     @Override

@@ -52,6 +52,11 @@ public class NonOverlappingScope implements Scope{
     }
 
     @Override
+    public int getFreeForIdentifier() {
+        return parent.getFreeForIdentifier();
+    }
+
+    @Override
     public boolean contains(Variable var) {
         return variables.contains(var) || parent.contains(var);
     }
