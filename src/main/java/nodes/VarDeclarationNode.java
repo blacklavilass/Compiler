@@ -1,8 +1,6 @@
 package nodes;
 
-import exception.SemanticException;
 import semantic.Scope;
-import semantic.TypeConvertibility;
 
 public class VarDeclarationNode extends AssignNode {
     public VarDeclarationNode(AssignNode another) {
@@ -24,6 +22,8 @@ public class VarDeclarationNode extends AssignNode {
     @Override
     public void initialize(Scope scope) {
         this.scope = scope;
+        node.initialize(scope);
+        expr.initialize(scope);
         scope.addVariable(node.name, Type.UNDEFINED);
     }
 }
