@@ -37,6 +37,15 @@ public class StmtListNode extends BasicNode{
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (StmtNode statement : statements) {
+            code.append(statement.generateCode());
+        }
+        return code;
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = new NonOverlappingScope(scope);
         for (StmtNode stmt : statements) {

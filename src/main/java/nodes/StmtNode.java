@@ -25,6 +25,11 @@ public class StmtNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        return node.generateCode();
+    }
+
+    @Override
     public String toString() {
         return "statement";
     }

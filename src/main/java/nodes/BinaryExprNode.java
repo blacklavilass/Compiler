@@ -58,6 +58,15 @@ public class BinaryExprNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(expr1.generateCode());
+        code.append(expr2.generateCode());
+        code.append(operator.getOperatorCode(expr1.getType(), expr2.getType(), scope));
+        return code;
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
         expr1.initialize(scope);
