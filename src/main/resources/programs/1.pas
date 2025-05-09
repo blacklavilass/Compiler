@@ -24,20 +24,15 @@ procedure WriteToFile(text: String);
 var
     fileHandler: String;
 begin
-    Assign(fileHandler, 'output.txt');
-    Rewrite(fileHandler);
     Writeln(fileHandler, text);
-    Close(fileHandler);
 end;
 
 begin
     { User input }
     Writeln('Enter your name:');
-    Readln(name);
     GreetUser(name);
 
     Writeln('Enter two numbers:');
-    Readln(num1, num2);
 
     { Using a function }
     result := Add(num1, num2);

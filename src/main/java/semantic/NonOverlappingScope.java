@@ -33,7 +33,7 @@ public class NonOverlappingScope implements Scope{
 
     @Override
     public boolean contains(Variable var) {
-        return variables.contains(var) && parent.contains(var);
+        return variables.contains(var) || parent.contains(var);
     }
 
     @Override
