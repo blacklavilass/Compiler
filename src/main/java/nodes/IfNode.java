@@ -43,8 +43,11 @@ public class IfNode extends BasicNode {
     public StringBuilder generateCode() {
         StringBuilder code = new StringBuilder();
         code.append(condition.generateCode());
-        code.append("ifeq ELSE:");
-
+        StringBuilder elseMarker = new StringBuilder().append("ELSE").append(scope.getElseIdentifier());
+        code.append("ifeq ").append(elseMarker).append("\n");
+        code.append(thenStmt.generateCode());
+        code.append(elseMarker).append(":\n");
+        return code;
     }
 
     @Override
