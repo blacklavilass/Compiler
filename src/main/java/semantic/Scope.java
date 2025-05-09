@@ -10,6 +10,8 @@ public interface Scope {
 
     int getFreeVariableIdentifier();
     int getFreeWhileIdentifier();
+    int getFreeOperatorIdentifier();
+    int getElseIdentifier();
 
     boolean contains(Variable var);
     void addCallable(Callable callable);

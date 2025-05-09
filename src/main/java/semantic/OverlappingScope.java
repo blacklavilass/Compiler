@@ -12,6 +12,8 @@ public class OverlappingScope implements Scope {
     private Set<Variable> variables;
     private int maxVariableIdentifier = 0;
     private int maxWhileIdentifier = 0;
+    private int maxOperatorIdentifier = 0;
+    private int maxElseIdentifier = 0;
 
     public OverlappingScope(Scope parent) {
         this.parent = parent;
@@ -34,6 +36,16 @@ public class OverlappingScope implements Scope {
     @Override
     public int getFreeWhileIdentifier() {
         return maxWhileIdentifier++;
+    }
+
+    @Override
+    public int getFreeOperatorIdentifier() {
+        return maxOperatorIdentifier++;
+    }
+
+    @Override
+    public int getElseIdentifier() {
+        return maxElseIdentifier++;
     }
 
     @Override

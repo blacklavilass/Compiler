@@ -1,6 +1,7 @@
 package nodes;
 
 import exception.SemanticException;
+import semantic.Scope;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,17 +25,15 @@ public enum BinaryOperator {
     private final String name;
     private final Map<TypePair, Type> supportable;
     private final Map<TypePair, StringBuilder> JVMOperations;
-    private static int currentID = -1;
 
     private static StringBuilder genComparisonPrefix() {
-        currentID++;
         return new StringBuilder(
-                " ELSE" + currentID + "\n" +
+                " ELSE_OP" + "$id" + "\n" +
                 "iconst 0\n" +
-                "goto FINISH" + currentID + "\n" +
-                "ELSE" + currentID + ":\n" +
+                "goto FINISH" + "$id" + "\n" +
+                "ELSE_OP" + "$id" + ":\n" +
                 "iconst 1\n" +
-                "FINISH" + currentID + ":\n");
+                "FINISH" + "$id" + ":\n");
     }
 
     BinaryOperator(String name) {
@@ -49,6 +48,12 @@ public enum BinaryOperator {
             return supportable.get(pair);
         }
         throw new SemanticException("Operation " + name + " is not supported with " + first + " and " + second);
+    }
+
+    public StringBuilder getOperatorCode(Type first, Type second, Scope scope) {
+        TypePair pair = new TypePair(first, second);
+        StringBuilder stringBuilder = JVMOperations.get(pair);
+        return new StringBuilder(stringBuilder.toString().replace("$id", String.valueOf(scope.getFreeVariableIdentifier())));
     }
 
     public Iterable<TypePair> supportableTypes() {

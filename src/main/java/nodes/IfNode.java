@@ -40,6 +40,14 @@ public class IfNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(condition.generateCode());
+        code.append("ifeq ELSE:");
+
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
         condition.initialize(scope);
