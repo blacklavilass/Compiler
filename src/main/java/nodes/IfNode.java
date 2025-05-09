@@ -33,11 +33,10 @@ public class IfNode extends BasicNode {
     @Override
     public void semanticCheck() {
         condition.semanticCheck();
-        thenStmt.semanticCheck();
-
         if (!condition.getType().equals(Type.BOOLEAN) && !TypeConvertibility.canConvert(condition.getType(), Type.BOOLEAN)) {
             throw new SemanticException("If condition should be boolean");
         }
+        thenStmt.semanticCheck();
     }
 
     @Override

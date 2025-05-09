@@ -111,7 +111,7 @@ public class ProgramNode extends BasicNode {
         code.append(".method public static main([Ljava/lang/String;)V");
         //TODO нормально посчитать стек (или убрать туду☺☺☺☺)
         code.append(".limit stack 20\n");
-        code.append(".limit locals ").append(scope.getFreeIdentifier()).append("\n");
+        code.append(".limit locals ").append(scope.getFreeVariableIdentifier()).append("\n");
         code.append(stmts.generateCode());
         code.append("return\n");
         code.append(".end method");

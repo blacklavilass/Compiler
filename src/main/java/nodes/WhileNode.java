@@ -42,9 +42,18 @@ public class WhileNode extends BasicNode{
     @Override
     public StringBuilder generateCode() {
         StringBuilder code = new StringBuilder();
-        code.append("");
+        int ident = scope.getFreeWhileIdentifier();
+        StringBuilder whileStart = new StringBuilder().append("while").append(ident).append("start");
+        StringBuilder whileEnd = new StringBuilder().append("while").append(ident).append("end");
+
+        code.append(whileStart).append(":\n");
         code.append(condition.generateCode());
-        code.append("while (");
+        code.append("ifeq ").append(whileEnd).append("\n");
+
+        code.append(body.generateCode());
+        code.append("goto ").append(whileStart).append("\n");
+
+        code.append(whileEnd).append(":\n");
         return code;
     }
 
