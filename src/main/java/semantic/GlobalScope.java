@@ -24,7 +24,7 @@ public class GlobalScope implements Scope {
     }
 
     public void setName(String name) {
-        programName = name;
+        programName = name.substring(0, 1).toUpperCase() + name.substring(1);;
     }
 
     @Override

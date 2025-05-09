@@ -35,21 +35,21 @@ public class LiteralNode extends BasicNode implements ExprNode {
             StringBuilder sb = new StringBuilder(value);
             sb.setCharAt(0, '"');
             sb.setCharAt(sb.length() - 1, '"');
-            return new StringBuilder().append(type.getCommandWordPrefix()).append("ldc ").append(sb).append("\n");
+            return new StringBuilder().append("ldc ").append(sb).append("\n");
         }
         if (type == Type.REAL) {
             StringBuilder sb = new StringBuilder(value);
             sb.append("f");
-            return new StringBuilder().append(type.getCommandWordPrefix()).append("ldc ").append(sb).append("\n");
+            return new StringBuilder().append("ldc ").append(sb).append("\n");
         }
         if (type == Type.BOOLEAN) {
             if ("true".equalsIgnoreCase(value)) {
-                return new StringBuilder().append(type.getCommandWordPrefix()).append("ldc ").append(1).append("\n");
+                return new StringBuilder().append("ldc ").append(1).append("\n");
             } else {
-                return new StringBuilder().append(type.getCommandWordPrefix()).append("ldc ").append(0).append("\n");
+                return new StringBuilder().append("ldc ").append(0).append("\n");
             }
         }
-        return new StringBuilder().append(type.getCommandWordPrefix()).append("ldc ").append(value).append("\n");
+        return new StringBuilder().append("ldc ").append(value).append("\n");
     }
 
     @Override

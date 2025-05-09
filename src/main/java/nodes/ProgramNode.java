@@ -63,7 +63,7 @@ public class ProgramNode extends BasicNode {
     }
 
     public void initialize(GlobalScope globalScope) {
-        if (globalScope != null) {
+        if (name != null) {
             globalScope.setName(name.name);
         }
         Scope scope = globalScope;
@@ -75,6 +75,21 @@ public class ProgramNode extends BasicNode {
         StringBuilder code = new StringBuilder();
         code.append(".class public ").append(scope.getName()).append("\n");
         code.append(".super java/lang/Object\n");
+
+        for (VarNode var : vars) {
+            for (VarLineNode varLine : var.varLines) {
+                Type type = varLine.type;
+                for (String s : varLine.variables) {
+                    code.append(".field static ")
+                            .append(s)
+                            .append(" ")
+                            .append(type.getAbbreviation())
+                            .append(" = ")
+                            .append(type.getDefaultValue());
+                    code.append("\n");
+                }
+            }
+        }
 
         code.append("""
                 .method public <init>()V
@@ -91,24 +106,8 @@ public class ProgramNode extends BasicNode {
                 .map(FunctionNode::generateCode)
                 .forEach(code::append);
 
-        for (VarNode var : vars) {
-            for (VarLineNode varLine : var.varLines) {
-                Type type = varLine.type;
-                for (String s : varLine.variables) {
-                    code.append(".field static ")
-                            .append(s)
-                            .append(" ")
-                            .append(type.toString())
-                            .append(" ")
-                            .append(type.getAbbreviation())
-                            .append(" = ")
-                            .append(type.getDefaultValue());
-                    code.append("\n");
-                }
-            }
-        }
 
-        code.append(".method public static main([Ljava/lang/String;)V");
+        code.append(".method public static main([Ljava/lang/String;)V\n");
         //TODO нормально посчитать стек (или убрать туду☺☺☺☺)
         code.append(".limit stack 20\n");
         code.append(".limit locals ").append(scope.getFreeVariableIdentifier()).append("\n");
@@ -118,5 +117,7 @@ public class ProgramNode extends BasicNode {
         return code;
     }
 
-
+    public String getProgramName() {
+        return scope.getName();
+    }
 }

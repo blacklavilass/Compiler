@@ -16,5 +16,8 @@ public class Main {
         programNode.semanticCheck();
         System.out.println("Семантических ошибок не обнаружено");
         System.out.println(Printer.printTree(programNode.tree(), "\n"));
+        FileWriter fw = new FileWriter(programNode.getProgramName() + ".j");
+        fw.write(programNode.generateCode().toString());
+        fw.close();
     }
 }

@@ -46,22 +46,22 @@ public class Variable implements Comparable<Variable> {
     public StringBuilder generateGetCode() {
         StringBuilder code = new StringBuilder();
         if (global) {
-            code.append("getstatic ").append(identifier).append(type.getAbbreviation());
+            code.append("getstatic ").append(identifier).append(" ").append(type.getAbbreviation());
         } else {
             code.append(type.getCommandWordPrefix()).append("load ").append(identifier);
         }
-        code.append("\n");
+        code.append("       ;").append(name).append("\n");
         return code;
     }
 
     public StringBuilder generatePutCode() {
         StringBuilder code = new StringBuilder();
         if (global) {
-            code.append("putstatic ").append(identifier).append(type.getAbbreviation());
+            code.append("putstatic ").append(identifier).append(" ").append(type.getAbbreviation());
         } else {
             code.append(type.getCommandWordPrefix()).append("store ").append(identifier);
         }
-        code.append("\n");
+        code.append("       ;").append(name).append("\n");
         return code;
     }
 

@@ -1,6 +1,7 @@
 package nodes;
 
 import exception.SemanticException;
+import semantic.NonOverlappingScope;
 import semantic.Scope;
 import semantic.TypeConvertibility;
 
@@ -59,7 +60,8 @@ public class WhileNode extends BasicNode{
 
     @Override
     public void initialize(Scope scope) {
-        condition.initialize(scope);
-        body.initialize(scope);
+        this.scope = new NonOverlappingScope(scope);
+        condition.initialize(this.scope);
+        body.initialize(this.scope);
     }
 }

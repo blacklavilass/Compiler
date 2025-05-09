@@ -53,7 +53,7 @@ public enum BinaryOperator {
     public StringBuilder getOperatorCode(Type first, Type second, Scope scope) {
         TypePair pair = new TypePair(first, second);
         StringBuilder stringBuilder = JVMOperations.get(pair);
-        return new StringBuilder(stringBuilder.toString().replace("$id", String.valueOf(scope.getFreeVariableIdentifier())));
+        return new StringBuilder(stringBuilder.toString().replace("$id", String.valueOf(scope.getFreeOperatorIdentifier())));
     }
 
     public Iterable<TypePair> supportableTypes() {

@@ -27,12 +27,13 @@ public class DefaultFunctions {
             code.append("""
                     new java/lang/StringBuilder
                     dup
-                    invokespecial java/lang/StringBuilder/<init>()V""");
+                    invokespecial java/lang/StringBuilder/<init>()V
+                    """);
             for (ExprNode arg : arguments) {
                 code.append(arg.generateCode());
                 code.append("invokevirtual java/lang/StringBuilder/append(").append(arg.getType().getAbbreviation()).append(")Ljava/lang/StringBuilder;\n");
             }
-            code.append("ldc  \"\\n\"");
+            code.append("ldc \"\\n\"\n");
             code.append("invokevirtual java/lang/StringBuilder/append(Ljava/lang/StringBuilder;)Ljava/lang/StringBuilder;\n");
             code.append("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n");
         }
