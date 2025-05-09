@@ -45,6 +45,11 @@ public class CastNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        return new StringBuilder().append(TypeConvertibility.generateCode(expr.getType(), toType));
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
         this.expr.initialize(scope);
