@@ -24,6 +24,7 @@ public class DefaultFunctions {
     public static StringBuilder generate(String functionName, List<ExprNode> arguments) {
         StringBuilder code = new StringBuilder();
         if (functionName.equalsIgnoreCase("writeln")) {
+            code.append("getstatic java/lang/System/out Ljava/io/PrintStream;\n");
             code.append("""
                     new java/lang/StringBuilder
                     dup
@@ -33,8 +34,7 @@ public class DefaultFunctions {
                 code.append(arg.generateCode());
                 code.append("invokevirtual java/lang/StringBuilder/append(").append(arg.getType().getAbbreviation()).append(")Ljava/lang/StringBuilder;\n");
             }
-            code.append("ldc \"\\n\"\n");
-            code.append("invokevirtual java/lang/StringBuilder/append(Ljava/lang/StringBuilder;)Ljava/lang/StringBuilder;\n");
+            code.append("invokevirtual java/lang/StringBuilder/toString()Ljava/lang/String;\n");
             code.append("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n");
         }
         return code;

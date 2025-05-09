@@ -29,10 +29,10 @@ public enum BinaryOperator {
     private static StringBuilder genComparisonPrefix() {
         return new StringBuilder(
                 " ELSE_OP" + "$id" + "\n" +
-                "iconst 0\n" +
+                "iconst_0\n" +
                 "goto FINISH" + "$id" + "\n" +
                 "ELSE_OP" + "$id" + ":\n" +
-                "iconst 1\n" +
+                "iconst_1\n" +
                 "FINISH" + "$id" + ":\n");
     }
 

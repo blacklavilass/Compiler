@@ -14,7 +14,7 @@ public class CallNode extends BasicNode implements ExprNode {
     Callable function = null;
 
     public CallNode(VariableNameNode functionName, List<ExprNode> arguments) {
-        this.functionName = functionName.name;
+        this.functionName = functionName.name.toLowerCase();
         this.arguments = arguments;
     }
 
@@ -47,10 +47,8 @@ public class CallNode extends BasicNode implements ExprNode {
         if (DefaultFunctions.isDefault(functionName)) {
             code.append(DefaultFunctions.generate(functionName, arguments));
         } else {
-            Collections.reverse(arguments);
             arguments.forEach(e -> code.append(e.generateCode()));
-            Collections.reverse(arguments);
-            code.append("invokestatic ").append(scope.getName()).append("/").append(functionName).append("(");
+            code.append("invokestatic ").append(scope.getName()).append("/").append(function.getName()).append("(");
             function.getParameters().forEach(e -> code.append(e.getAbbreviation()));
             code.append(")").append(function.getReturnType().getAbbreviation()).append("\n");
         }

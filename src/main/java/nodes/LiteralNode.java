@@ -49,6 +49,10 @@ public class LiteralNode extends BasicNode implements ExprNode {
                 return new StringBuilder().append("ldc ").append(0).append("\n");
             }
         }
+        if (type == Type.CHAR) {
+            int a = value.charAt(1);
+            return new StringBuilder().append("ldc ").append(a).append("\n");
+        }
         return new StringBuilder().append("ldc ").append(value).append("\n");
     }
 

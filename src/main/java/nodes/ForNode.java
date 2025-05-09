@@ -42,7 +42,9 @@ public class ForNode extends BasicNode{
         assign.semanticCheck();
         body.semanticCheck();
 
-        if (!TypeConvertibility.canConvert(ceil.getType(), Type.INTEGER)) throw new SemanticException("Not an integer after " + (isUp ? "to" : "downto") + " keyword. Instead got: " + ceil.getType());
+        if (ceil.getType() != Type.INTEGER && !TypeConvertibility.canConvert(ceil.getType(), Type.INTEGER)) {
+            throw new SemanticException("Not an integer after " + (isUp ? "to" : "downto") + " keyword. Instead got: " + ceil.getType());
+        }
     }
 
     @Override
@@ -54,13 +56,15 @@ public class ForNode extends BasicNode{
         Variable v = assign.node.variable;
         code.append(assign.generateCode());
         code.append(forStart).append(":\n");
+        code.append(v.generateGetCode());
+        code.append(ceil.generateCode());
         code.append(BinaryOperator.EQUAL.getOperatorCode(Type.INTEGER, Type.INTEGER, scope));
         code.append("ifeq ").append(forEnd).append("\n");
 
         code.append(body.generateCode());
 
         code.append(v.generateGetCode());
-        code.append("iconst 1\n");
+        code.append("iconst_1\n");
         if (isUp) {
             code.append("iadd\n");
         } else {
