@@ -1,7 +1,8 @@
 package nodes;
 
-import semantic.NonOverlappingScope;
+import exception.SemanticException;
 import semantic.Scope;
+import semantic.TypeConvertibility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,20 @@ public class WhileNode extends BasicNode{
     @Override
     public void semanticCheck() {
         condition.semanticCheck();
+        if (!condition.getType().equals(Type.BOOLEAN) && !TypeConvertibility.canConvert(condition.getType(), Type.BOOLEAN)) {
+            throw new SemanticException("If condition should be boolean");
+        }
         body.semanticCheck();
+
+    }
+
+    @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append("");
+        code.append(condition.generateCode());
+        code.append("while (");
+        return code;
     }
 
     @Override

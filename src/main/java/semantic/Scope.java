@@ -8,7 +8,8 @@ public interface Scope {
     void addVariable(String name, Type type);
     Variable getVariable(String name);
 
-    int getFreeIdentifier();
+    int getFreeVariableIdentifier();
+    int getFreeWhileIdentifier();
 
     boolean contains(Variable var);
     void addCallable(Callable callable);

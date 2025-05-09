@@ -26,14 +26,19 @@ public class NonOverlappingScope implements Scope{
 
     @Override
     public void addVariable(String name, Type type) {
-        Variable i = new Variable(name.toLowerCase(), type, getFreeIdentifier());
+        Variable i = new Variable(name.toLowerCase(), type, getFreeVariableIdentifier());
         if (contains(i)) throw new SemanticException("Variable is already declared");
         variables.add(i);
     }
 
     @Override
-    public int getFreeIdentifier() {
-        return parent.getFreeIdentifier();
+    public int getFreeVariableIdentifier() {
+        return parent.getFreeVariableIdentifier();
+    }
+
+    @Override
+    public int getFreeWhileIdentifier() {
+        return parent.getFreeWhileIdentifier();
     }
 
     @Override

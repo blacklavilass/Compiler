@@ -11,7 +11,8 @@ import java.util.TreeSet;
 public class GlobalScope implements Scope {
     private Set<Variable> variables;
     private Set<Callable> callables;
-    private int maxIdentifier = 0;
+    private int maxVariableIdentifier = 0;
+    private int maxWhileIdentifier = 0;
     private String programName = "Program";
 
     public GlobalScope() {
@@ -84,8 +85,13 @@ public class GlobalScope implements Scope {
     }
 
     @Override
-    public int getFreeIdentifier() {
-        return maxIdentifier++;
+    public int getFreeVariableIdentifier() {
+        return maxVariableIdentifier++;
+    }
+
+    @Override
+    public int getFreeWhileIdentifier() {
+        return maxWhileIdentifier++;
     }
 
     @Override
