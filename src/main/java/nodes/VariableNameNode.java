@@ -25,6 +25,11 @@ public class VariableNameNode extends BasicNode implements ExprNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        return variable.generateGetCode();
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
     }

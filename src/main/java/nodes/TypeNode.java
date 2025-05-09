@@ -22,6 +22,11 @@ public class TypeNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        return new StringBuilder();
+    }
+
+    @Override
     public void initialize(Scope scope) {
         //not needed
     }
