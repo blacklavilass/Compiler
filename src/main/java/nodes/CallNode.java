@@ -44,12 +44,16 @@ public class CallNode extends BasicNode implements ExprNode {
     @Override
     public StringBuilder generateCode() {
         StringBuilder code = new StringBuilder();
-        Collections.reverse(arguments);
-        arguments.forEach(e -> code.append(e.generateCode()));
-        Collections.reverse(arguments);
-        code.append("invokestatic ").append(scope.getName()).append("/").append(functionName).append("(");
-        function.getParameters().forEach(e -> code.append(e.getAbbreviation()));
-        code.append(")").append(function.getReturnType().getAbbreviation()).append("\n");
+        if (DefaultFunctions.isDefault(functionName)) {
+            code.append(DefaultFunctions.generate(functionName, arguments));
+        } else {
+            Collections.reverse(arguments);
+            arguments.forEach(e -> code.append(e.generateCode()));
+            Collections.reverse(arguments);
+            code.append("invokestatic ").append(scope.getName()).append("/").append(functionName).append("(");
+            function.getParameters().forEach(e -> code.append(e.getAbbreviation()));
+            code.append(")").append(function.getReturnType().getAbbreviation()).append("\n");
+        }
         return code;
     }
 
