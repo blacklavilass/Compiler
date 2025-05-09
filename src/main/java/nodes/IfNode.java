@@ -35,7 +35,7 @@ public class IfNode extends BasicNode {
         condition.semanticCheck();
         thenStmt.semanticCheck();
 
-        if (condition.getType().equals(Type.BOOLEAN) || !TypeConvertibility.canConvert(condition.getType(), Type.BOOLEAN)) {
+        if (!condition.getType().equals(Type.BOOLEAN) || !TypeConvertibility.canConvert(condition.getType(), Type.BOOLEAN)) {
             throw new SemanticException("If condition should be boolean");
         }
     }
