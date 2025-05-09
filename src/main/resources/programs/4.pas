@@ -3,7 +3,7 @@ var a1 : String;
 
 function f(a : integer; b : string): integer;
 begin
-result := 1
+result := 11
 end;
 
 begin
@@ -12,5 +12,6 @@ begin
     begin
         Writeln(b1);
         var h1 := b1 - 1;
+        b1 := b1 - 1;
     end;
 end.

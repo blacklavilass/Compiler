@@ -32,6 +32,15 @@ public class ParamListNode extends BasicNode{
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (VarLineNode child : children) {
+            code.append(String.valueOf(child.type.getAbbreviation()).repeat(child.variables.size()));
+        }
+        return code;
+    }
+
+    @Override
     public void initialize(Scope scope) {
         for (VarLineNode child : children) {
             child.initialize(scope);

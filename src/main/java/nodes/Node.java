@@ -9,5 +9,7 @@ public interface Node {
     void semanticCheck();
 
     List<String> tree();
-    void initialize(final Scope scope);
+    <T extends Scope> void initialize(final T scope);
+
+    StringBuilder generateCode();
 }

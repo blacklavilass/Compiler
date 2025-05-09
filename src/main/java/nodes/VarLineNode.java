@@ -1,6 +1,7 @@
 package nodes;
 
 import semantic.Scope;
+import semantic.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,16 @@ public class VarLineNode extends BasicNode {
     @Override
     public void semanticCheck() {
         //not needed
+    }
+
+    @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (String var : variables) {
+            code.append("ldc ").append(type.getDefaultValue()).append("\n");
+            code.append(scope.getVariable(var).generatePutCode()).append("\n");
+        }
+        return code;
     }
 
     @Override

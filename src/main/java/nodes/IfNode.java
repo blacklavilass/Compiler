@@ -33,11 +33,21 @@ public class IfNode extends BasicNode {
     @Override
     public void semanticCheck() {
         condition.semanticCheck();
-        thenStmt.semanticCheck();
-
-        if (condition.getType().equals(Type.BOOLEAN) || !TypeConvertibility.canConvert(condition.getType(), Type.BOOLEAN)) {
+        if (!condition.getType().equals(Type.BOOLEAN) && !TypeConvertibility.canConvert(condition.getType(), Type.BOOLEAN)) {
             throw new SemanticException("If condition should be boolean");
         }
+        thenStmt.semanticCheck();
+    }
+
+    @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(condition.generateCode());
+        StringBuilder elseMarker = new StringBuilder().append("ELSE").append(scope.getElseIdentifier());
+        code.append("ifeq ").append(elseMarker).append("\n");
+        code.append(thenStmt.generateCode());
+        code.append(elseMarker).append(":\n");
+        return code;
     }
 
     @Override

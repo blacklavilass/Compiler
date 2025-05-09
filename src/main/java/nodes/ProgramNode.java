@@ -20,6 +20,7 @@ public class ProgramNode extends BasicNode {
         this.vars = vars;
         this.stmts = stmts;
     }
+
     @Override
     public List<? extends Node> children() {
         List<Node> children = new ArrayList<>();
@@ -59,5 +60,63 @@ public class ProgramNode extends BasicNode {
             func.initialize(scope);
         }
         stmts.initialize(scope);
+    }
+
+    public void initialize(GlobalScope globalScope) {
+        if (name != null) {
+            globalScope.setName(name.name);
+        }
+        Scope scope = globalScope;
+        initialize(scope);
+    }
+
+    @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(".class public ").append(scope.getName()).append("\n");
+        code.append(".super java/lang/Object\n");
+
+        for (VarNode var : vars) {
+            for (VarLineNode varLine : var.varLines) {
+                Type type = varLine.type;
+                for (String s : varLine.variables) {
+                    code.append(".field static ")
+                            .append(s)
+                            .append(" ")
+                            .append(type.getAbbreviation())
+                            .append(" = ")
+                            .append(type.getDefaultValue());
+                    code.append("\n");
+                }
+            }
+        }
+
+        code.append("""
+                .method public <init>()V
+                   aload_0
+                   invokenonvirtual java/lang/Object/<init>()V
+                   return
+                .end method
+                """);
+
+        procs.stream()
+                .map(ProcedureNode::generateCode)
+                .forEach(code::append);
+        funcs.stream()
+                .map(FunctionNode::generateCode)
+                .forEach(code::append);
+
+
+        code.append(".method public static main([Ljava/lang/String;)V\n");
+        code.append(".limit stack 20\n");
+        code.append(".limit locals ").append((scope.getFreeVariableIdentifier() + 1) * 2).append("\n");
+        code.append(stmts.generateCode());
+        code.append("return\n");
+        code.append(".end method");
+        return code;
+    }
+
+    public String getProgramName() {
+        return scope.getName();
     }
 }

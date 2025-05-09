@@ -11,10 +11,20 @@ import java.util.TreeSet;
 public class GlobalScope implements Scope {
     private Set<Variable> variables;
     private Set<Callable> callables;
+    private int maxVariableIdentifier = 0;
+    private int maxWhileIdentifier = 0;
+    private int maxForIdentifier = 0;
+    private int maxOperatorIdentifier = 0;
+    private int maxElseIdentifier = 0;
+    private String programName = "Program";
 
     public GlobalScope() {
         variables = new TreeSet<>();
         callables = new TreeSet<>();
+    }
+
+    public void setName(String name) {
+        programName = name.substring(0, 1).toUpperCase() + name.substring(1);;
     }
 
     @Override
@@ -50,6 +60,16 @@ public class GlobalScope implements Scope {
         return result.getLast();
     }
 
+    @Override
+    public String getName() {
+        return programName;
+    }
+
+    @Override
+    public int getVariableCount() {
+        return variables.size();
+    }
+
     private boolean convertable(List<Type> types, List<Type> parameters) {
         if (parameters.size() != types.size()) return false;
         for (int i = 0; i < types.size(); i++) {
@@ -68,8 +88,33 @@ public class GlobalScope implements Scope {
     }
 
     @Override
+    public int getFreeVariableIdentifier() {
+        return maxVariableIdentifier++;
+    }
+
+    @Override
+    public int getFreeWhileIdentifier() {
+        return maxWhileIdentifier++;
+    }
+
+    @Override
+    public int getFreeForIdentifier() {
+        return maxForIdentifier++;
+    }
+
+    @Override
+    public int getFreeOperatorIdentifier() {
+        return maxOperatorIdentifier++;
+    }
+
+    @Override
+    public int getElseIdentifier() {
+        return maxElseIdentifier++;
+    }
+
+    @Override
     public void addVariable(String name, Type type) {
-        Variable i = new Variable(name.toLowerCase(), type);
+        Variable i = new Variable(name.toLowerCase(), type, programName + "/" + name);
         if (variables.contains(i)) throw new SemanticException("Variable is already declared");
         variables.add(i);
     }

@@ -38,6 +38,14 @@ public class AssignNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(expr.generateCode());
+        code.append(node.variable.generatePutCode());
+        return code;
+    }
+
+    @Override
     public void initialize(Scope scope) {
         this.scope = scope;
         node.initialize(scope);
