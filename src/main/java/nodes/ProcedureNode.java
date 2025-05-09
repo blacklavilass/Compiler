@@ -41,6 +41,22 @@ public class ProcedureNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(".method public static ").append(name).append("(")
+                .append(params.generateCode())
+                .append(")").append(Type.UNDEFINED.getAbbreviation()).append("\n");
+        //TODO нормально посчитать стек (или убрать туду☺☺☺☺)
+        code.append(".limit stack 20\n");
+        code.append(".limit locals ").append(scope.getFreeIdentifier()).append("\n");
+        vars.stream().map(VarNode::generateCode).forEach(code::append);
+        code.append(body.generateCode());
+        code.append("return\n");
+        code.append(".end method\n\n");
+        return code;
+    }
+
+    @Override
     public void initialize(Scope scope) {
         //TODO: add support of convertable types in parameters type
         scope = new OverlappingScope(scope);

@@ -24,6 +24,15 @@ public class VarNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (VarLineNode varLine : varLines) {
+            code.append(varLine.generateCode());
+        }
+        return code;
+    }
+
+    @Override
     public String toString() {
         return "varLines";
     }

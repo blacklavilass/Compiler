@@ -10,6 +10,7 @@ import java.util.TreeSet;
 public class OverlappingScope implements Scope {
     private Scope parent;
     private Set<Variable> variables;
+    private int maxIdentifier = 0;
 
     public OverlappingScope(Scope parent) {
         this.parent = parent;
@@ -25,8 +26,13 @@ public class OverlappingScope implements Scope {
     }
 
     @Override
+    public int getFreeIdentifier() {
+        return maxIdentifier++;
+    }
+
+    @Override
     public void addVariable(String name, Type type) {
-        Variable i = new Variable(name.toLowerCase(), type);
+        Variable i = new Variable(name.toLowerCase(), type, getFreeIdentifier());
         if (variables.contains(i)) throw new SemanticException("Variable is already declared: " + name);
         variables.add(i);
     }
@@ -44,5 +50,15 @@ public class OverlappingScope implements Scope {
     @Override
     public Callable getCallable(String name, List<Type> parameters) {
         return parent.getCallable(name, parameters);
+    }
+
+    @Override
+    public String getName() {
+        return parent.getName();
+    }
+
+    @Override
+    public int getVariableCount() {
+        return maxIdentifier;
     }
 }

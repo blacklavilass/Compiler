@@ -43,8 +43,24 @@ public class FunctionNode extends BasicNode {
     }
 
     @Override
+    public StringBuilder generateCode() {
+        StringBuilder code = new StringBuilder();
+        code.append(".method public static ").append(name).append("(")
+                .append(params.generateCode())
+                .append(")").append(returnType.getAbbreviation()).append("\n");
+        //TODO нормально посчитать стек (или убрать туду☺☺☺☺)
+        code.append(".limit stack 20\n");
+        code.append(".limit locals ").append(scope.getFreeIdentifier()).append("\n");
+        vars.stream().map(VarNode::generateCode).forEach(code::append);
+        code.append(body.generateCode());
+        code.append(scope.getVariable("result").generateGetCode());
+        code.append(returnType.getCommandWordPrefix()).append("return\n");
+        code.append(".end method\n\n");
+        return code;
+    }
+
+    @Override
     public void initialize(Scope scope) {
-        //TODO: add support of convertable types in parameters type
         scope = new OverlappingScope(scope);
         this.scope = scope;
 
@@ -55,7 +71,7 @@ public class FunctionNode extends BasicNode {
         body.initialize(scope);
 
         ArrayList<Type> parameters = new ArrayList<>();
-        for (VarLineNode node: params.children()) {
+        for (VarLineNode node : params.children()) {
             for (int i = 0; i < node.variables.size(); i++) {
                 parameters.add(node.type);
             }
